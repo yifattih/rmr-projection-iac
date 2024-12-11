@@ -21,10 +21,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: yifattih/rmr-projection-api-model
-          path: main
+          path: api
       
       - name: Print the checked out content
         run: |
+          cd api
           ls -la
 
   #     #######################################################################
