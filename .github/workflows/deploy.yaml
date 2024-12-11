@@ -20,12 +20,12 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
-          repository: yifattih/rmr-projection-api-model
-          path: api
+          repository: ${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_API }}
+          path: ${{ vars.REPO_NAME_API }}
       
-      - name: Print the checked out content
+      - name: Print the checked out repo content
         run: |
-          cd api
+          cd ${{ vars.REPO_NAME_API }}
           ls -la
 
   #     #######################################################################
