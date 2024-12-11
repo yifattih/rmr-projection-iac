@@ -26,13 +26,15 @@ jobs:
       
       - name: Print the checked out repo content
         run: |
-          repo_url=https://github.com/${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_API }}.git
-          latest_tag=$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")          
-          
           cd ${{ vars.REPO_NAME_API }}
           
           echo "This is the contents of the checked out repo:"
           ls -la
+
+      - name: Print the latest repo release tag
+        run: |
+          repo_url=https://github.com/${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_API }}.git
+          latest_tag=$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")
           
           echo "This is the last release tag of the repository:"
           echo "Latest tag: $latest_tag"
@@ -51,14 +53,16 @@ jobs:
           path: ${{ vars.REPO_NAME_WEBAPP }}
       
       - name: Print the checked out repo content
-        run: |
-          repo_url=https://github.com/${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_WEBAPP }}.git
-          latest_tag=$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")          
-          
+        run: |         
           cd ${{ vars.REPO_NAME_WEBAPP }}
           
           echo "This is the contents of the checked out repo:"
           ls -la
+
+      - name: Print the latest repo release tag
+        run: |
+          repo_url=https://github.com/${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_WEBAPP }}.git
+          latest_tag=$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")
           
           echo "This is the last release tag of the repository:"
           echo "Latest tag: $latest_tag"
