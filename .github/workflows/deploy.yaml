@@ -10,8 +10,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  push-api-image:
-    name: Build and Push the API container image
+# /////////////////////////////////////////////////////////////////////////////
+# /////////////////////////////////////////////////////////////////////////////
+# /////////////////////////////////////////////////////////////////////////////
+  api-image:
+    name: Checkout, Build and Push API Image
     runs-on: ubuntu-latest
 
     steps:
@@ -24,10 +27,15 @@ jobs:
       - name: Print the checked out repo content
         run: |
           cd ${{ vars.REPO_NAME_API }}
+          echo "This is the contents of the checked out repo:"
           ls -la
-
-  push-webapp-image:
-    name: Build and Push the Webapp container image
+          echo "This is the last release tag of the repository:"
+          git describe --tags --abbrev=0
+# /////////////////////////////////////////////////////////////////////////////
+# /////////////////////////////////////////////////////////////////////////////
+# /////////////////////////////////////////////////////////////////////////////
+  webapp-image:
+    name: Checkout, Build and Push Webapp Image
     runs-on: ubuntu-latest
 
     steps:
@@ -40,7 +48,11 @@ jobs:
       - name: Print the checked out repo content
         run: |
           cd ${{ vars.REPO_NAME_WEBAPP }}
+          echo "This are the contents of the checked out repo:"
           ls -la
+          echo "" && echo ""
+          echo "This is the last release tag of the repository:"
+          git describe --tags --abbrev=0
 
   # deploy:
   #   name: Deployig To Environment
