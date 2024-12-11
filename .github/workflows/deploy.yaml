@@ -26,11 +26,16 @@ jobs:
       
       - name: Print the checked out repo content
         run: |
+          repo_url=https://github.com/${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_API }}.git
+          latest_tag=$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")          
+          
           cd ${{ vars.REPO_NAME_API }}
+          
           echo "This is the contents of the checked out repo:"
           ls -la
+          
           echo "This is the last release tag of the repository:"
-          git describe --tags --abbrev=0
+          echo "Latest tag: $latest_tag"
 # /////////////////////////////////////////////////////////////////////////////
 # /////////////////////////////////////////////////////////////////////////////
 # /////////////////////////////////////////////////////////////////////////////
@@ -47,12 +52,16 @@ jobs:
       
       - name: Print the checked out repo content
         run: |
+          repo_url=https://github.com/${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_WEBAPP }}.git
+          latest_tag=$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")          
+          
           cd ${{ vars.REPO_NAME_WEBAPP }}
-          echo "This are the contents of the checked out repo:"
+          
+          echo "This is the contents of the checked out repo:"
           ls -la
-          echo "" && echo ""
+          
           echo "This is the last release tag of the repository:"
-          git describe --tags --abbrev=0
+          echo "Latest tag: $latest_tag"
 
   # deploy:
   #   name: Deployig To Environment
