@@ -34,8 +34,7 @@ jobs:
       - name: Create imagename:tag and export to outputs
         run: |
           IMAGE_NAME=api
-          IMAGE_NAME_TAG=$IMAGE_NAME:$LATEST_TAG
-          echo "IMAGE_NAME_TAG" >> "$GITHUB_OUTPUT"
+          echo "IMAGE_NAME_TAG=$IMAGE_NAME:$LATEST_TAG" >> "$GITHUB_OUTPUT"
         #######################################################################
       - name: Build Docker Image
         run: |
@@ -78,8 +77,7 @@ jobs:
       - name: Create imagename:tag and export to outputs
         run: |
           IMAGE_NAME=webapp
-          IMAGE_NAME_TAG=$IMAGE_NAME:$LATEST_TAG
-          echo "IMAGE_NAME_TAG" >> "$GITHUB_OUTPUT"
+          echo "IMAGE_NAME_TAG=$IMAGE_NAME:$LATEST_TAG" >> "$GITHUB_OUTPUT"
         #######################################################################
       - name: Build Docker Image
         run: |
