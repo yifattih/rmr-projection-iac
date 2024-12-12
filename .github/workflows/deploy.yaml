@@ -49,17 +49,17 @@ jobs:
 
           cd ${{ vars.REPO_NAME_API }}
           docker build -t $IMAGE ./api_service
-      #   #######################################################################
-      # - name: Authenticate to Google Cloud
-      #   uses: google-github-actions/auth@v2.1.7
-      #   with:
-      #     credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-      #   #######################################################################
-      # - name: Configure Docker to use gcloud
-      #   run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
-      #   #######################################################################
-      # - name: Push to Artifact Registry
-      #   run: docker push $IMAGE
+        #######################################################################
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2.1.7
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        #######################################################################
+      - name: Configure Docker to use gcloud
+        run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
+        #######################################################################
+      - name: Push to Artifact Registry
+        run: docker push $IMAGE
 # /////////////////////////////////////////////////////////////////////////////
 # /////////////////////////////////////////////////////////////////////////////
 # /////////////////////////////////////////////////////////////////////////////
@@ -101,45 +101,41 @@ jobs:
 
           cd ${{ vars.REPO_NAME_WEBAPP }}
           docker build -t $IMAGE ./app
-      #   #######################################################################
-      # - name: Authenticate to Google Cloud
-      #   uses: google-github-actions/auth@v2.1.7
-      #   with:
-      #     credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-      #   #######################################################################
-      # - name: Configure Docker to use gcloud
-      #   run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
-      #   #######################################################################
-      # - name: Push to Artifact Registry
-      #   run: docker push $IMAGE
+        #######################################################################
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2.1.7
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        #######################################################################
+      - name: Configure Docker to use gcloud
+        run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
+        #######################################################################
+      - name: Push to Artifact Registry
+        run: docker push $IMAGE
 # /////////////////////////////////////////////////////////////////////////////
 # /////////////////////////////////////////////////////////////////////////////
 # /////////////////////////////////////////////////////////////////////////////
-  testing:
-    name: Print Image Name Tag
+  deploy:
+    name: Deploy Services
     runs-on: ubuntu-latest
     needs:
       - image-api
       - image-webapp
+
     steps:
-      - name: Print Names
+    - name: Authenticate with GCP
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Deploy Terraform
         run: |
-          echo ""
-          echo "API   :::   ${{ needs.image-api.outputs.NAME_TAG }}"
-          echo "WebApp   :::   ${{ needs.image-webapp.outputs.NAME_TAG }}"
-  
-  # deploy:
-  #   name: Deploy Services
-  #   runs-on: ubuntu-latest
-  #   needs:
-  #     - image-api
-  #     - image-webapp
-  #   steps:
-  #     - name: Deploy Terraform
-  #       run: |
-  #         cd terraform
-  #         terraform init
-  #         terraform apply -auto-approve \
-  #           -var="project_id=${{ secrets.GCP_PROJECT }}" \
-  #           -var="region=${{ secrets.GCP_REGION }}" \
-  #           -var="image_tags=${{ needs.image-api.outputs.NAME_TAG }},${{ needs.image-webapp.outputs.NAME_TAG }}"
+          cd terraform
+          terraform init
+          terraform apply -auto-approve \
+            -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            -var="region=${{ secrets.GCP_REGION }}" \
+            -var="service_names=[\"api\", \"webapp\"]" \
+            -var="artifact_registry_name=${{ secrets.REGISTRY_REPO_NAME }}" \
+            -var="image_repo_url=${{ env.IMAGE_REPO_URL }}" \
+            -var="image_name_tags={\"api\":\"${{ needs.image-api.outputs.NAME_TAG }}\", \"webapp\":\"${{ needs.image-webapp.outputs.NAME_TAG }}\"}"
