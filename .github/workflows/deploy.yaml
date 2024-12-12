@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     # Map a step output to a job output
     outputs:
-      IMAGE_NAME_TAG: ${{ steps.repo_tag.outputs.IMAGE_NAME_TAG }}
+      NAME_TAG: ${{ steps.image_name_tag.outputs.NAME_TAG }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -32,13 +32,19 @@ jobs:
           echo "${{ vars.REPO_NAME_API }} ::: latest tag :::   $LATEST_TAG"
         #######################################################################
       - name: Create imagename:tag and export to outputs
+        id: image_name_tag
         run: |
-          IMAGE_NAME=api
-          echo "IMAGE_NAME_TAG=$IMAGE_NAME:$LATEST_TAG" >> "$GITHUB_OUTPUT"
+          NAME=api
+          TAG=${{ steps.repo_tag.outputs.LATEST_TAG }}
+          NAME_TAG=$IMAGE_NAME:$TAG
+          echo "NAME_TAG=$NAME_TAG" >> "$GITHUB_OUTPUT"
+          echo "Image name tag: $NAME_TAG"
         #######################################################################
       - name: Build Docker Image
         run: |
-          IMAGE=${{ env.IMAGE_REPO_URL }}/$IMAGE_NAME_TAG
+          NAME_TAG=${{ steps.image_name_tag.outputs.NAME_TAG }}
+          IMAGE=${{ env.IMAGE_REPO_URL }}/$NAME_TAG
+          echo "IMAGE=$IMAGE" >> "$GITHUB_OUTPUT"
           docker build -t $IMAGE ./api_service
       #   #######################################################################
       # - name: Authenticate to Google Cloud
@@ -59,7 +65,7 @@ jobs:
     runs-on: ubuntu-latest
     # Map a step output to a job output
     outputs:
-      IMAGE_NAME_TAG: ${{ steps.repo_tag.outputs.IMAGE_NAME_TAG }}
+      NAME_TAG: ${{ steps.image_name_tag.outputs.NAME_TAG }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -75,14 +81,19 @@ jobs:
           echo "${{ vars.REPO_NAME_WEBAPP }} ::: latest tag :::   $LATEST_TAG"
         #######################################################################
       - name: Create imagename:tag and export to outputs
+        id: image_name_tag
         run: |
-          IMAGE_NAME=webapp
-          echo "IMAGE_NAME_TAG=$IMAGE_NAME:$LATEST_TAG" >> "$GITHUB_OUTPUT"
-          echo "Image name tag: $IMAGE_NAME:$LATEST_TAG"
+          NAME=webapp
+          TAG=${{ steps.repo_tag.outputs.LATEST_TAG }}
+          NAME_TAG=$IMAGE_NAME:$TAG
+          echo "NAME_TAG=$NAME_TAG" >> "$GITHUB_OUTPUT"
+          echo "Image name tag: $NAME_TAG"
         #######################################################################
       - name: Build Docker Image
         run: |
-          IMAGE=${{ env.IMAGE_REPO_URL }}/$IMAGE_NAME_TAG
+          NAME_TAG=${{ steps.image_name_tag.outputs.NAME_TAG }}
+          IMAGE=${{ env.IMAGE_REPO_URL }}/$NAME_TAG
+          echo "IMAGE=$IMAGE" >> "$GITHUB_OUTPUT"
           docker build -t $IMAGE ./app
       #   #######################################################################
       # - name: Authenticate to Google Cloud
@@ -108,8 +119,8 @@ jobs:
       - name: Print Names
         run: |
           echo ""
-          echo "API   :::   ${{ needs.image-api.outputs.IMAGE_NAME_TAG }}"
-          echo "WebApp   :::   ${{ needs.image-webapp.outputs.IMAGE_NAME_TAG }}"
+          echo "API   :::   ${{ needs.image-api.outputs.NAME_TAG }}"
+          echo "WebApp   :::   ${{ needs.image-webapp.outputs.NAME_TAG }}"
   
   # deploy:
   #   name: Deploy Services
@@ -125,4 +136,4 @@ jobs:
   #         terraform apply -auto-approve \
   #           -var="project_id=${{ secrets.GCP_PROJECT }}" \
   #           -var="region=${{ secrets.GCP_REGION }}" \
-  #           -var="image_tags=${{ needs.image-api.outputs.IMAGE_NAME_TAG }},${{ needs.image-webapp.outputs.IMAGE_NAME_TAG }}"
+  #           -var="image_tags=${{ needs.image-api.outputs.NAME_TAG }},${{ needs.image-webapp.outputs.NAME_TAG }}"
