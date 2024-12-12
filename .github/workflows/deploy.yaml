@@ -1,10 +1,8 @@
 name: Deployment Pipeline
 
-# env:
-    # ARTIFACT_REGISTRY: ${{ secrets.GCP_REGION }}-docker.pkg.dev
-    # REGISTRY_REPO_NAME: "rmr-alpha"
-    # IMAGE_NAME: "api"
-    # IMAGE_URL: "$ARTIFACT_REGISTRY/${{ secrets.GCP_PROJECT_ID }}/$REGISTRY_REPO_NAME/$IMAGE_NAME"
+env:
+    ARTIFACT_REGISTRY: ${{ secrets.GCP_REGION }}-docker.pkg.dev
+    IMAGE_REPO_URL: "$ARTIFACT_REGISTRY/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REGISTRY_REPO_NAME }}/$IMAGE_NAME"
 
 on:
   workflow_dispatch:
@@ -13,86 +11,119 @@ jobs:
 # /////////////////////////////////////////////////////////////////////////////
 # /////////////////////////////////////////////////////////////////////////////
 # /////////////////////////////////////////////////////////////////////////////
-  api-image:
+  image-api:
     name: Checkout, Build and Push API Image
     runs-on: ubuntu-latest
-
+    # Map a step output to a job output
+    outputs:
+      IMAGE_NAME_TAG: ${{ steps.repo_tag.outputs.IMAGE_NAME_TAG }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
           repository: ${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_API }}
           path: ${{ vars.REPO_NAME_API }}
-      
-      - name: Print the checked out repo content
-        run: |
-          cd ${{ vars.REPO_NAME_API }}
-          
-          echo "This is the contents of the checked out repo:"
-          ls -la
-
-      - name: Print the latest repo release tag
+        #######################################################################
+      - name: Extract the latest repo release tag
+        id: repo_tag
         run: |
           repo_url=https://github.com/${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_API }}.git
-          latest_tag=$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")
-          
-          echo "This is the last release tag of the repository:"
-          echo "Latest tag: $latest_tag"
+          LATEST_TAG=$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")
+          echo "${{ vars.REPO_NAME_API }} ::: latest tag :::   $LATEST_TAG""
+        #######################################################################
+      - name: Create imagename:tag and export to outputs
+        run: |
+          IMAGE_NAME=api
+          IMAGE_NAME_TAG=$IMAGE_NAME:$LATEST_TAG
+          echo "IMAGE_NAME_TAG" >> "$GITHUB_OUTPUT"
+        #######################################################################
+      - name: Build Docker Image
+        run: |
+          IMAGE=${{ env.IMAGE_REPO_URL }}/$IMAGE_NAME:$IMAGE_NAME_TAG
+          docker build -t $IMAGE ./api_service
+      #   #######################################################################
+      # - name: Authenticate to Google Cloud
+      #   uses: google-github-actions/auth@v2.1.7
+      #   with:
+      #     credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+      #   #######################################################################
+      # - name: Configure Docker to use gcloud
+      #   run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
+      #   #######################################################################
+      # - name: Push to Artifact Registry
+      #   run: docker push $IMAGE
 # /////////////////////////////////////////////////////////////////////////////
 # /////////////////////////////////////////////////////////////////////////////
 # /////////////////////////////////////////////////////////////////////////////
-  webapp-image:
+  image-webapp:
     name: Checkout, Build and Push Webapp Image
     runs-on: ubuntu-latest
-
+    # Map a step output to a job output
+    outputs:
+      IMAGE_NAME_TAG: ${{ steps.repo_tag.outputs.IMAGE_NAME_TAG }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
           repository: ${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_WEBAPP }}
           path: ${{ vars.REPO_NAME_WEBAPP }}
-      
-      - name: Print the checked out repo content
-        run: |         
-          cd ${{ vars.REPO_NAME_WEBAPP }}
-          
-          echo "This is the contents of the checked out repo:"
-          ls -la
-
-      - name: Print the latest repo release tag
+        #######################################################################
+      - name: Extract the latest repo release tag
+        id: repo_tag
         run: |
           repo_url=https://github.com/${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_WEBAPP }}.git
-          latest_tag=$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")
-          
-          echo "This is the last release tag of the repository:"
-          echo "Latest tag: $latest_tag"
-
+          LATEST_TAG=$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")
+          echo "${{ vars.REPO_NAME_WEBAPP }} ::: latest tag :::   $LATEST_TAG""
+        #######################################################################
+      - name: Create imagename:tag and export to outputs
+        run: |
+          IMAGE_NAME=webapp
+          IMAGE_NAME_TAG=$IMAGE_NAME:$LATEST_TAG
+          echo "IMAGE_NAME_TAG" >> "$GITHUB_OUTPUT"
+        #######################################################################
+      - name: Build Docker Image
+        run: |
+          IMAGE=${{ env.IMAGE_REPO_URL }}/$IMAGE_NAME:$IMAGE_NAME_TAG
+          docker build -t $IMAGE ./app
+      #   #######################################################################
+      # - name: Authenticate to Google Cloud
+      #   uses: google-github-actions/auth@v2.1.7
+      #   with:
+      #     credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+      #   #######################################################################
+      # - name: Configure Docker to use gcloud
+      #   run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
+      #   #######################################################################
+      # - name: Push to Artifact Registry
+      #   run: docker push $IMAGE
+# /////////////////////////////////////////////////////////////////////////////
+# /////////////////////////////////////////////////////////////////////////////
+# /////////////////////////////////////////////////////////////////////////////
+  testing:
+    name: Print Image Name Tag
+    runs-on: ubuntu-latest
+    needs:
+      - image-api
+      - image-webapp
+    steps:
+      - name: Print Names
+        run: |
+          echo ""
+          echo "API   :::   ${{ needs.image-api.outputs.IMAGE_NAME_TAG }}"
+          echo "WebApp   :::   ${{ needs.image-webapp.outputs.IMAGE_NAME_TAG }}"
+  
   # deploy:
-  #   name: Deployig To Environment
+  #   name: Deploy Services
   #   runs-on: ubuntu-latest
-  #   needs: 
-  #     - build-test
-  #     - semantic-release
-
+  #   needs:
+  #     - image-api
+  #     - image-webapp
   #   steps:
-  #     - name: Check out repository
-  #       uses: actions/checkout@v4
-
-  #     #######################################################################
-  #     - name: Authenticate to Google Cloud
-  #       uses: google-github-actions/auth@v2.1.7
-  #       with:
-  #         credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-
-  #     #######################################################################
-  #     - name: Build Docker Image
+  #     - name: Deploy Terraform
   #       run: |
-  #         image=${{ env.IMAGE_URL }}:${{ needs.semantic-release.outputs.IMAGE_TAG }}
-  #         docker build -t $image ./api_service
-      
-  #     #######################################################################
-  #     - name: Push to Artifact Registry
-  #       run: |
-  #         image=${{ env.IMAGE_URL }}:${{ needs.semantic-release.outputs.IMAGE_TAG }}
-  #         gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
-  #         docker push $image
+  #         cd terraform
+  #         terraform init
+  #         terraform apply -auto-approve \
+  #           -var="project_id=${{ secrets.GCP_PROJECT }}" \
+  #           -var="region=${{ secrets.GCP_REGION }}" \
+  #           -var="image_tags=${{ needs.image-api.outputs.IMAGE_NAME_TAG }},${{ needs.image-webapp.outputs.IMAGE_NAME_TAG }}"
