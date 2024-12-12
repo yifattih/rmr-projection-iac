@@ -38,7 +38,7 @@ jobs:
         #######################################################################
       - name: Build Docker Image
         run: |
-          IMAGE=${{ env.IMAGE_REPO_URL }}/$IMAGE_NAME:$IMAGE_NAME_TAG
+          IMAGE=${{ env.IMAGE_REPO_URL }}/$IMAGE_NAME_TAG
           docker build -t $IMAGE ./api_service
       #   #######################################################################
       # - name: Authenticate to Google Cloud
@@ -81,7 +81,7 @@ jobs:
         #######################################################################
       - name: Build Docker Image
         run: |
-          IMAGE=${{ env.IMAGE_REPO_URL }}/$IMAGE_NAME:$IMAGE_NAME_TAG
+          IMAGE=${{ env.IMAGE_REPO_URL }}/$IMAGE_NAME_TAG
           docker build -t $IMAGE ./app
       #   #######################################################################
       # - name: Authenticate to Google Cloud
