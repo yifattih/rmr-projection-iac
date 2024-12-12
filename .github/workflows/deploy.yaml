@@ -29,7 +29,7 @@ jobs:
         run: |
           repo_url=https://github.com/${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_API }}.git
           LATEST_TAG=$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")
-          echo "${{ vars.REPO_NAME_API }} ::: latest tag :::   $LATEST_TAG""
+          echo "${{ vars.REPO_NAME_API }} ::: latest tag :::   $LATEST_TAG"
         #######################################################################
       - name: Create imagename:tag and export to outputs
         run: |
@@ -73,7 +73,7 @@ jobs:
         run: |
           repo_url=https://github.com/${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_WEBAPP }}.git
           LATEST_TAG=$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")
-          echo "${{ vars.REPO_NAME_WEBAPP }} ::: latest tag :::   $LATEST_TAG""
+          echo "${{ vars.REPO_NAME_WEBAPP }} ::: latest tag :::   $LATEST_TAG"
         #######################################################################
       - name: Create imagename:tag and export to outputs
         run: |
