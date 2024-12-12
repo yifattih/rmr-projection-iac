@@ -29,16 +29,17 @@ jobs:
         run: |
           repo_url=https://github.com/${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_API }}.git
           LATEST_TAG=$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")
-          echo "${{ vars.REPO_NAME_API }} ::: latest tag :::   $LATEST_TAG"
+          echo "LATEST_TAG=$LATEST_TAG" >> "$GITHUB_OUTPUT"
+          echo "${{ vars.REPO_NAME_API }} Latest Tag :::   $LATEST_TAG"
         #######################################################################
       - name: Create imagename:tag and export to outputs
         id: image_name_tag
         run: |
           NAME=api
           TAG=${{ steps.repo_tag.outputs.LATEST_TAG }}
-          NAME_TAG=$IMAGE_NAME:$TAG
+          NAME_TAG=$NAME:$TAG
           echo "NAME_TAG=$NAME_TAG" >> "$GITHUB_OUTPUT"
-          echo "Image name tag: $NAME_TAG"
+          echo "Image name:tag ::: $NAME_TAG"
         #######################################################################
       - name: Build Docker Image
         run: |
@@ -78,6 +79,7 @@ jobs:
         run: |
           repo_url=https://github.com/${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_WEBAPP }}.git
           LATEST_TAG=$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")
+          echo "LATEST_TAG=$LATEST_TAG" >> "$GITHUB_OUTPUT"
           echo "${{ vars.REPO_NAME_WEBAPP }} ::: latest tag :::   $LATEST_TAG"
         #######################################################################
       - name: Create imagename:tag and export to outputs
@@ -85,7 +87,7 @@ jobs:
         run: |
           NAME=webapp
           TAG=${{ steps.repo_tag.outputs.LATEST_TAG }}
-          NAME_TAG=$IMAGE_NAME:$TAG
+          NAME_TAG=$NAME:$TAG
           echo "NAME_TAG=$NAME_TAG" >> "$GITHUB_OUTPUT"
           echo "Image name tag: $NAME_TAG"
         #######################################################################
