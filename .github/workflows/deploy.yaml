@@ -98,6 +98,8 @@ jobs:
           NAME_TAG=${{ steps.image_name_tag.outputs.NAME_TAG }}
           IMAGE=${{ env.IMAGE_REPO_URL }}/$NAME_TAG
           echo "IMAGE=$IMAGE" >> "$GITHUB_OUTPUT"
+
+          cd ${{ vars.REPO_NAME_WEBAPP }}
           docker build -t $IMAGE ./app
       #   #######################################################################
       # - name: Authenticate to Google Cloud
