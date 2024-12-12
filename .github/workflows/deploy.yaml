@@ -42,6 +42,7 @@ jobs:
           echo "Image name:tag ::: $NAME_TAG"
         #######################################################################
       - name: Build Docker Image
+        id: image_build
         run: |
           NAME_TAG=${{ steps.image_name_tag.outputs.NAME_TAG }}
           IMAGE=${{ env.IMAGE_REPO_URL }}/$NAME_TAG
@@ -59,7 +60,9 @@ jobs:
         run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
         #######################################################################
       - name: Push to Artifact Registry
-        run: docker push $IMAGE
+        run: |
+        IMAGE=${{ steps.image_build.outputs.IMAGE }}
+        docker push $IMAGE
 # /////////////////////////////////////////////////////////////////////////////
 # /////////////////////////////////////////////////////////////////////////////
 # /////////////////////////////////////////////////////////////////////////////
@@ -94,6 +97,7 @@ jobs:
           echo "Image name tag: $NAME_TAG"
         #######################################################################
       - name: Build Docker Image
+        id: image_build
         run: |
           NAME_TAG=${{ steps.image_name_tag.outputs.NAME_TAG }}
           IMAGE=${{ env.IMAGE_REPO_URL }}/$NAME_TAG
@@ -111,6 +115,7 @@ jobs:
         run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
         #######################################################################
       - name: Push to Artifact Registry
+        IMAGE=${{ steps.image_build.outputs.IMAGE }}
         run: docker push $IMAGE
 # /////////////////////////////////////////////////////////////////////////////
 # /////////////////////////////////////////////////////////////////////////////
