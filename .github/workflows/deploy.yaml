@@ -78,6 +78,7 @@ jobs:
         run: |
           IMAGE_NAME=webapp
           echo "IMAGE_NAME_TAG=$IMAGE_NAME:$LATEST_TAG" >> "$GITHUB_OUTPUT"
+          echo "Image name tag: $IMAGE_NAME:$LATEST_TAG"
         #######################################################################
       - name: Build Docker Image
         run: |
