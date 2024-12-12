@@ -2,7 +2,7 @@ name: Deployment Pipeline
 
 env:
     ARTIFACT_REGISTRY: ${{ secrets.GCP_REGION }}-docker.pkg.dev
-    IMAGE_REPO_URL: "$ARTIFACT_REGISTRY/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REGISTRY_REPO_NAME }}/$IMAGE_NAME"
+    IMAGE_REPO_URL: "$ARTIFACT_REGISTRY/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REGISTRY_REPO_NAME }}"
 
 on:
   workflow_dispatch:
