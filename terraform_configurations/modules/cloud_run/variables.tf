@@ -28,10 +28,10 @@ variable "image_tag" {
   description = "Tag of the container image."
 }
 
-variable "service_account" {
-  type        = string
-  description = "The service account email for the Cloud Run service."
-}
+# variable "service_account" {
+#   type        = string
+#   description = "The service account email for the Cloud Run service."
+# }
 
 variable "env_vars" {
   type        = map(string)

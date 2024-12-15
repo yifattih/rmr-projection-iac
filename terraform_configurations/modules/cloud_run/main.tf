@@ -10,7 +10,7 @@ resource "google_cloud_run_service" "service" {
           value = lookup(var.env_vars, "API_URL", null)
         }
       }
-      service_account_name = var.service_account
+      # service_account_name = var.service_account
     }
   }
   # dynamic "traffic" {
