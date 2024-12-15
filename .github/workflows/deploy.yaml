@@ -35,6 +35,7 @@ jobs:
           repo_url=https://github.com/${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_API }}.git
           NAME=api
           TAG=$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")
+          echo "NAME=$NAME" >> "$GITHUB_OUTPUT"
           echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
           echo "NAME_TAG=$NAME:$TAG" >> "$GITHUB_OUTPUT"
           echo "$NAME NAME:TAG   :   $NAME_TAG"
@@ -96,6 +97,7 @@ jobs:
           repo_url=https://github.com/${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_WEBAPP }}.git
           NAME=webapp
           TAG=$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")
+          echo "NAME=$NAME" >> "$GITHUB_OUTPUT"
           echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
           echo "NAME_TAG=$NAME:$TAG" >> "$GITHUB_OUTPUT"
           echo "$NAME NAME:TAG   :   $NAME_TAG"
@@ -157,7 +159,7 @@ jobs:
         #######################################################################
       - name: Terraform Init
         run: |
-          cd terraform
+          cd terraform_configurations
           terraform init
         #######################################################################
       - name: Terraform Apply
