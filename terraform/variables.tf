@@ -1,30 +1,40 @@
 variable "project_id" {
-    description = "GCP Project ID"
-    type        = string  
+  type        = string
+  description = "The ID of the GCP project."
 }
 
 variable "region" {
-    description = "GCP Region for Cloud Run"
-    type        = string
-}
-
-variable "service_names" {
-    description = "List of microservice names"
-    type        = list(string)
-    default = [ "api", "webapp" ]
-}
-
-variable "artifact_registry_name" {
-  description = "Name of the Artifact Registry"
   type        = string
+  description = "The GCP region to deploy resources."
 }
 
-variable "image_repo_url" {
-    description = "URL for the container images repository"
-    type        = string  
+variable "artifact_registry_repo" {
+  type        = string
+  description = "Name of the Artifact Registry repository."
 }
 
-variable "image_name_tags" {
-  description = "Tags for the container images"
-  type        = map(string)
+variable "api_image_name" {
+  type        = string
+  description = "Name of the API image in Artifact Registry."
 }
+
+variable "api_image_tag" {
+  type        = string
+  description = "Tag of the API image."
+}
+
+variable "webapp_image_name" {
+  type        = string
+  description = "Name of the webapp image in Artifact Registry."
+}
+
+variable "webapp_image_tag" {
+  type        = string
+  description = "Tag of the webapp image."
+}
+
+# variable "traffic_split" {
+#   type        = map(string)
+#   description = "Map of service revisions and their traffic split percentages."
+#   default     = {}
+# }

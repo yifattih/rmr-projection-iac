@@ -1,15 +1,30 @@
-module "artifact_registry" {
-  source                 = "./modules/artifact_registry"
-  project_id             = var.project_id
-  region                 = var.region
-  artifact_registry_name = var.artifact_registry_name
+module "iam" {
+  source     = "./modules/iam"
+  project_id = var.project_id
+  region     = var.region
 }
 
-module "cloud_run_services" {
-  source          = "./modules/cloud_run"
-  project_id      = var.project_id
-  region          = var.region
-  service_names   = var.service_names
-  image_repo_url  = var.image_repo_url
-  image_name_tags = var.image_name_tags
+module "api_service" {
+  source             = "./modules/cloud_run"
+  name               = "api-service"
+  project_id         = var.project_id
+  region             = var.region
+  artifact_repo_name = var.artifact_registry_repo
+  image_name         = var.api_image_name
+  image_tag          = var.api_image_tag
+  service_account    = module.iam.service_account_email
+  # traffic_split      = var.traffic_split
+}
+
+module "webapp_service" {
+  source             = "./modules/cloud_run"
+  name               = "webapp-service"
+  project_id         = var.project_id
+  region             = var.region
+  artifact_repo_name = var.artifact_registry_repo
+  image_name         = var.webapp_image_name
+  image_tag          = var.webapp_image_tag
+  service_account    = module.iam.service_account_email
+  env_vars           = { API_URL = module.api_service.url }
+  # traffic_split      = var.traffic_split
 }
