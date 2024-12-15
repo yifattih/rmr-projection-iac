@@ -36,7 +36,7 @@ jobs:
           NAME=api
           TAG=$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")
           echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
-          echo "NAME_TAG=$NAME_$TAG" >> "$GITHUB_OUTPUT"
+          echo "NAME_TAG=$NAME:$TAG" >> "$GITHUB_OUTPUT"
           echo "$NAME NAME:TAG   :   $NAME_TAG"
         #######################################################################
       # - name: Create NAME:TAG and export to outputs
@@ -97,7 +97,7 @@ jobs:
           NAME=webapp
           TAG=$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")
           echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
-          echo "NAME_TAG=$NAME_$TAG" >> "$GITHUB_OUTPUT"
+          echo "NAME_TAG=$NAME:$TAG" >> "$GITHUB_OUTPUT"
           echo "$NAME NAME:TAG   :   $NAME_TAG"
         #######################################################################
       # - name: Create imagename:tag and export to outputs
@@ -156,7 +156,6 @@ jobs:
         run: |
           cd terraform
           terraform init
-          terraform plan
           terraform apply -auto-approve \
             -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
             -var="region=${{ secrets.GCP_REGION }}" \
