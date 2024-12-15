@@ -152,7 +152,8 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
         #######################################################################
-      - name: Deploy Terraform
+      - name: Deploy with HashiCorp - Terraform
+        uses: hashicorp/setup-terraform@v3.1.2
         run: |
           cd terraform
           terraform init
