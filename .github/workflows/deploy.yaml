@@ -157,13 +157,10 @@ jobs:
       - name: HashiCorp - Setup Terraform
         uses: hashicorp/setup-terraform@v3.1.2
         #######################################################################
-      - name: Terraform Init
+      - name: Terraform Init and Apply
         run: |
           cd terraform_configurations
           terraform init
-        #######################################################################
-      - name: Terraform Apply
-        run: |
           terraform apply -auto-approve \
             -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
             -var="region=${{ secrets.GCP_REGION }}" \
