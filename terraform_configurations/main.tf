@@ -13,6 +13,7 @@ module "api_service" {
   image_name         = var.api_image_name
   image_tag          = var.api_image_tag
   service_account    = module.iam.service_account_email
+  env_vars           = {}
   # traffic_split      = var.traffic_split
 }
 
