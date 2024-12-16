@@ -44,8 +44,8 @@ variable "env_vars" {
   default     = null
 }
 
-variable "traffic_split" {
-  type        = map(string)
-  description = "Map of service revisions and their traffic split percentages."
-  default     = null
-}
+# variable "traffic_split" {
+#   type        = map(string)
+#   description = "Map of service revisions and their traffic split percentages."
+#   default     = null
+# }

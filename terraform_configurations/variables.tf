@@ -3,7 +3,7 @@ variable "project_id" {
   description = "The ID of the GCP project."
 }
 
-variable "region" {
+variable "region" { 
   type        = string
   description = "The GCP region to deploy resources."
 }
@@ -33,10 +33,10 @@ variable "webapp_image_tag" {
   description = "Tag of the webapp image."
 }
 
-variable "port" {
-  type        = number
-  description = "Port number for the container to expose."
-}
+# variable "port" {
+#   type        = number
+#   description = "Port number for the container to expose."
+# }
 
 # variable "traffic_split" {
 #   type        = map(string)
