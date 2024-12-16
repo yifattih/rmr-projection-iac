@@ -33,6 +33,11 @@ variable "webapp_image_tag" {
   description = "Tag of the webapp image."
 }
 
+variable "port" {
+  type        = number
+  description = "Port number for the container to expose."
+}
+
 # variable "traffic_split" {
 #   type        = map(string)
 #   description = "Map of service revisions and their traffic split percentages."

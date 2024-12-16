@@ -28,6 +28,11 @@ variable "image_tag" {
   description = "Tag of the container image."
 }
 
+variable "port" {
+  type        = number
+  description = "Port number for the container to expose."
+}
+
 # variable "service_account" {
 #   type        = string
 #   description = "The service account email for the Cloud Run service."
@@ -36,11 +41,11 @@ variable "image_tag" {
 variable "env_vars" {
   type        = map(string)
   description = "Environment variables for the service."
-  default     = {}
+  default     = null
 }
 
 variable "traffic_split" {
   type        = map(string)
   description = "Map of service revisions and their traffic split percentages."
-  default     = {}
+  default     = null
 }
