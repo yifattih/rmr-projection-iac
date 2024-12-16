@@ -23,7 +23,7 @@ resource "google_cloud_run_service" "service" {
         name  = "${var.image_name}-${var.image_tag}"
         image = "${var.region}-docker.pkg.dev/${var.project_id}/${var.artifact_repo_name}/${var.image_name}:${var.image_tag}" # Docker image URL
         ports {
-          name           = "http"
+          name           = "http1"
           container_port = var.port # Replace with your desired container port
         }
         env {
