@@ -41,7 +41,7 @@ variable "port" {
 variable "env_vars" {
   type        = map(string)
   description = "Environment variables for the service."
-  default     = null
+  default     = {}
 }
 
 # variable "traffic_split" {
