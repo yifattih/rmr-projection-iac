@@ -27,7 +27,7 @@ resource "google_cloud_run_service" "service" {
           container_port = var.port # Replace with your desired container port
         }
         env {
-          name  = var.env_vars != null ? "API_URL" : null
+          name  = var.env_vars != {} ? "API_URL" : null
           value = lookup(var.env_vars, "API_URL", null)
         }
       }
@@ -43,9 +43,19 @@ resource "google_cloud_run_service" "service" {
   # }
 }
 
-resource "google_cloud_run_service_iam_binding" "invoker" {
-  location    = var.region
+data "google_iam_policy" "noauth" {
+  binding {
+    role = "roles/run.invoker"
+    members = [
+      "allUsers",
+    ]
+  }
+}
+
+resource "google_cloud_run_service_iam_policy" "noauth" {
+  location    = google_cloud_run_service.service.location
+  project     = google_cloud_run_service.service.project
   service     = google_cloud_run_service.service.name
-  role        = "roles/run.invoker"
-  members     = [ "allUsers" ]
+
+  policy_data = data.google_iam_policy.noauth.policy_data
 }
