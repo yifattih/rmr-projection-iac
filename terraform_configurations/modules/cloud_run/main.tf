@@ -34,13 +34,6 @@ resource "google_cloud_run_service" "service" {
       # service_account_name = var.service_account
     }
   }
-  # dynamic "traffic" {
-  #   for_each = var.traffic_split
-  #   content {
-  #     revision_name = each.key
-  #     percent       = each.value
-  #   }
-  # }
 }
 
 data "google_iam_policy" "noauth" {
