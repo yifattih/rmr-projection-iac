@@ -50,8 +50,8 @@ jobs:
           echo "IMAGE=$IMAGE" >> "$GITHUB_OUTPUT"
           echo "SERVICE_REVISION=$SERVICE_REVISION" >> "$GITHUB_OUTPUT"
 
-          echo "GitHub repo owner                   : vars.REPO_OWNER"
-          echo "GitHub repo                         : vars.REPO_NAME_API"
+          echo "GitHub repo owner                   : ${{  vars.REPO_OWNER  }}"
+          echo "GitHub repo                         : ${{  vars.REPO_NAME_API  }}"
           echo "GitHub extracted latest tag         : $TAG"
           echo "GitHub repo branch to checkout      : $REPO_BRANCH"
           echo "Deployment for                      : $DEPLOYMENT_FOR"
@@ -60,6 +60,7 @@ jobs:
           echo "Container image nametag             : $IMAGE_NAME_TAG"
           echo "Cloud Run service name              : $SERVICE_NAME"
           echo "Cloud Run service revision name     : $SERVICE_REVISION"
+          echo "Cloud Run service port to expose    : ${{  vars.CONTAINER_PORT_API  }}"
       ######################################################################### 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -81,9 +82,9 @@ jobs:
       - name: Configure Docker to use gcloud
         run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
         #######################################################################
-      # - name: Push to Artifact Registry
-      #   run: |
-      #     docker push ${{ steps.metadata.outputs.IMAGE }}
+      - name: Push to Artifact Registry
+        run: |
+          docker push ${{ steps.metadata.outputs.IMAGE }}
   # ///////////////////////////////////////////////////////////////////////////
   # ///////////////////////////////////////////////////////////////////////////
   # ///////////////////////////////////////////////////////////////////////////
@@ -133,6 +134,7 @@ jobs:
           echo "Container image nametag             : $IMAGE_NAME_TAG"
           echo "Cloud Run service name              : $SERVICE_NAME"
           echo "Cloud Run service revision name     : $SERVICE_REVISION"
+          echo "Cloud Run service port to expose    : ${{  vars.CONTAINER_PORT_CLIENT  }}"
       ######################################################################### 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -154,9 +156,9 @@ jobs:
       - name: Configure Docker to use gcloud
         run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
         #######################################################################
-      # - name: Push to Artifact Registry
-      #   run: |
-      #     docker push ${{ steps.metadata.outputs.IMAGE }}
+      - name: Push to Artifact Registry
+        run: |
+          docker push ${{ steps.metadata.outputs.IMAGE }}
   # ///////////////////////////////////////////////////////////////////////////
   # ///////////////////////////////////////////////////////////////////////////
   # ///////////////////////////////////////////////////////////////////////////
