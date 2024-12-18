@@ -17,7 +17,7 @@ jobs:
   image-api:
     name: "API: Construct Metadata, Checkout Code, Build Image and Push"
     runs-on: ubuntu-latest
-    setps:
+    steps:
       - name: Extract information and construct metadata
         id: metadata
         run: |
@@ -90,7 +90,7 @@ jobs:
   image-client:
     name: "Client: Construct Metadata, Checkout Code, Build Image and Push"
     runs-on: ubuntu-latest
-    setps:
+    steps:
       - name: Extract information and construct metadata
         id: metadata
         run: |
