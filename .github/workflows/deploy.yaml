@@ -2,7 +2,7 @@ name: Deployment Pipeline
 
 env:
     ARTIFACT_REGISTRY: ${{ secrets.GCP_REGION }}-docker.pkg.dev
-    IMAGE_REPO_URL: "$ARTIFACT_REGISTRY/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REGISTRY_REPO_NAME }}"
+    IMAGE_REPO_URL: "$ARTIFACT_REGISTRY/${{ secrets.GCP_PROJECT_ID }}"
 
 on:
   workflow_dispatch:
@@ -11,45 +11,67 @@ on:
       - core/*
 
 jobs:
-# /////////////////////////////////////////////////////////////////////////////
-# /////////////////////////////////////////////////////////////////////////////
-# /////////////////////////////////////////////////////////////////////////////
+  # ///////////////////////////////////////////////////////////////////////////
+  # ///////////////////////////////////////////////////////////////////////////
+  # ///////////////////////////////////////////////////////////////////////////
   image-api:
-    name: Checkout, Build and Push API Image
+    name: "API: Construct Metadata, Checkout Code, Build Image and Push"
     runs-on: ubuntu-latest
-    # Map step output to job output
-    outputs:
-      NAME: ${{ steps.image_name_tag.outputs.NAME }}
-      TAG: ${{ steps.image_name_tag.outputs.TAG }}
-      NAME_TAG: ${{ steps.image_name_tag.outputs.NAME_TAG }}
-    steps:
-      - name: Check out repository
+    setps:
+      - name: Extract information and construct metadata
+        id: metadata
+        run: |
+          account_url="https://github.com/${{ vars.REPO_OWNER }}"
+          repo_url="$account_url/${{ vars.REPO_NAME_API }}.git"
+
+          IMAGE_NAME="api"
+          TAG="$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")"
+
+          if echo $TAG | grep -q "alpha"; then
+              REPO_BRANCH="alpha"
+              ENVIRONMENT="alpha"
+              DEPLOYMENT_FOR="alpha testing environment"
+          else
+              REPO_BRANCH="main"
+              ENVIRONMENT="production"
+              DEPLOYMENT_FOR="production environment"
+          fi
+
+          IMAGE_NAME_TAG="$IMAGE_NAME:$TAG"
+          IMAGE="${{ env.IMAGE_REPO_URL }}/$ENVIRONMENT/$IMAGE_NAME_TAG"
+          SERVICE_NAME="$IMAGE_NAME-$ENVIRONMENT"
+          SERVICE_REVISION="$IMAGE_NAME-$TAG"
+
+          echo "IMAGE_NAME=$IMAGE_NAME" >> "$GITHUB_OUTPUT"
+          echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
+          echo "IMAGE_NAME_TAG=$IMAGE_NAME_TAG" >> "$GITHUB_OUTPUT"
+          echo "ENVIRONMENT=$ENVIRONMENT" >> "$GITHUB_OUTPUT"
+          echo "REPO_BRANCH=$REPO_BRANCH" >> "$GITHUB_OUTPUT"
+          echo "IMAGE=$IMAGE" >> "$GITHUB_OUTPUT"
+          echo "SERVICE_REVISION=$SERVICE_REVISION" >> "$GITHUB_OUTPUT"
+
+          echo "GitHub repo owner                   : vars.REPO_OWNER"
+          echo "GitHub repo                         : vars.REPO_NAME_API"
+          echo "GitHub extracted latest tag         : $TAG"
+          echo "GitHub repo branch to checkout      : $REPO_BRANCH"
+          echo "Deployment for                      : $DEPLOYMENT_FOR"
+          echo "GCP Artifact Registry repo to push  : $ENVIRONMENT"
+          echo "Container image name                : $IMAGE_NAME"
+          echo "Container image nametag             : $IMAGE_NAME_TAG"
+          echo "Cloud Run service name              : $SERVICE_NAME"
+          echo "Cloud Run service revision name     : $SERVICE_REVISION"
+      ######################################################################### 
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           repository: ${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_API }}
+          ref: ${{ steps.metadata.outputs.REPO_BRANCH }}
           path: ${{ vars.REPO_NAME_API }}
         #######################################################################
-      - name: Extract TAG, Set NAME:TAG Output
-        id: image_name_tag
-        run: |
-          repo_url=https://github.com/${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_API }}.git
-          NAME=api
-          TAG=$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")
-          NAME_TAG=$NAME:$TAG
-          echo "NAME=$NAME" >> "$GITHUB_OUTPUT"
-          echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
-          echo "NAME_TAG=$NAME_TAG" >> "$GITHUB_OUTPUT"
-          echo "$NAME NAME:TAG   :   $NAME_TAG"
-        #######################################################################
       - name: Build Docker Image
-        id: image_build
         run: |
-          NAME_TAG=${{ steps.image_name_tag.outputs.NAME_TAG }}
-          IMAGE=${{ env.IMAGE_REPO_URL }}/$NAME_TAG
-          echo "IMAGE=$IMAGE" >> "$GITHUB_OUTPUT"
-
           cd ${{ vars.REPO_NAME_API }}
-          docker build -t $IMAGE ./api_service
+          docker build -t ${{ steps.metadata.outputs.IMAGE }} ./api_service
         #######################################################################
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2.1.7
@@ -59,49 +81,70 @@ jobs:
       - name: Configure Docker to use gcloud
         run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
         #######################################################################
-      - name: Push to Artifact Registry
-        run: |
-          IMAGE=${{ steps.image_build.outputs.IMAGE }}
-          docker push $IMAGE
-# /////////////////////////////////////////////////////////////////////////////
-# /////////////////////////////////////////////////////////////////////////////
-# /////////////////////////////////////////////////////////////////////////////
-  image-webapp:
-    name: Checkout, Build and Push Webapp Image
+      # - name: Push to Artifact Registry
+      #   run: |
+      #     docker push ${{ steps.metadata.outputs.IMAGE }}
+  # ///////////////////////////////////////////////////////////////////////////
+  # ///////////////////////////////////////////////////////////////////////////
+  # ///////////////////////////////////////////////////////////////////////////
+  image-client:
+    name: "Client: Construct Metadata, Checkout Code, Build Image and Push"
     runs-on: ubuntu-latest
-    # Map step output to job output
-    outputs:
-      NAME: ${{ steps.image_name_tag.outputs.NAME }}
-      TAG: ${{ steps.image_name_tag.outputs.TAG }}
-      NAME_TAG: ${{ steps.image_name_tag.outputs.NAME_TAG }}
-    steps:
-      - name: Check out repository
+    setps:
+      - name: Extract information and construct metadata
+        id: metadata
+        run: |
+          account_url="https://github.com/${{ vars.REPO_OWNER }}"
+          repo_url="$account_url/${{ vars.REPO_NAME_CLIENT }}.git"
+
+          IMAGE_NAME="client"
+          TAG="$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")"
+
+          if echo $TAG | grep -q "alpha"; then
+              REPO_BRANCH="alpha"
+              ENVIRONMENT="alpha"
+              DEPLOYMENT_FOR="alpha testing environment"
+          else
+              REPO_BRANCH="main"
+              ENVIRONMENT="production"
+              DEPLOYMENT_FOR="production environment"
+          fi
+
+          IMAGE_NAME_TAG="$IMAGE_NAME:$TAG"
+          IMAGE="${{ env.IMAGE_REPO_URL }}/$ENVIRONMENT/$IMAGE_NAME_TAG"
+          SERVICE_NAME="$IMAGE_NAME-$ENVIRONMENT"
+          SERVICE_REVISION="$IMAGE_NAME-$TAG"
+
+          echo "IMAGE_NAME=$IMAGE_NAME" >> "$GITHUB_OUTPUT"
+          echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
+          echo "IMAGE_NAME_TAG=$IMAGE_NAME_TAG" >> "$GITHUB_OUTPUT"
+          echo "ENVIRONMENT=$ENVIRONMENT" >> "$GITHUB_OUTPUT"
+          echo "REPO_BRANCH=$REPO_BRANCH" >> "$GITHUB_OUTPUT"
+          echo "IMAGE=$IMAGE" >> "$GITHUB_OUTPUT"
+          echo "SERVICE_REVISION=$SERVICE_REVISION" >> "$GITHUB_OUTPUT"
+
+          echo "GitHub repo owner                   : vars.REPO_OWNER"
+          echo "GitHub repo                         : vars.REPO_NAME_CLIENT"
+          echo "GitHub extracted latest tag         : $TAG"
+          echo "GitHub repo branch to checkout      : $REPO_BRANCH"
+          echo "Deployment for                      : $DEPLOYMENT_FOR"
+          echo "GCP Artifact Registry repo to push  : $ENVIRONMENT"
+          echo "Container image name                : $IMAGE_NAME"
+          echo "Container image nametag             : $IMAGE_NAME_TAG"
+          echo "Cloud Run service name              : $SERVICE_NAME"
+          echo "Cloud Run service revision name     : $SERVICE_REVISION"
+      ######################################################################### 
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
-          repository: ${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_WEBAPP }}
-          path: ${{ vars.REPO_NAME_WEBAPP }}
-        #######################################################################
-      - name: Extract TAG, Set NAME:TAG Output
-        id: image_name_tag
-        run: |
-          repo_url=https://github.com/${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_WEBAPP }}.git
-          NAME=webapp
-          TAG=$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")
-          NAME_TAG=$NAME:$TAG
-          echo "NAME=$NAME" >> "$GITHUB_OUTPUT"
-          echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
-          echo "NAME_TAG=$NAME_TAG" >> "$GITHUB_OUTPUT"
-          echo "$NAME NAME:TAG   :   $NAME_TAG"
+          repository: ${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_CLIENT }}
+          ref: ${{ steps.metadata.outputs.REPO_BRANCH }}
+          path: ${{ vars.REPO_NAME_CLIENT }}
         #######################################################################
       - name: Build Docker Image
-        id: image_build
         run: |
-          NAME_TAG=${{ steps.image_name_tag.outputs.NAME_TAG }}
-          IMAGE=${{ env.IMAGE_REPO_URL }}/$NAME_TAG
-          echo "IMAGE=$IMAGE" >> "$GITHUB_OUTPUT"
-
-          cd ${{ vars.REPO_NAME_WEBAPP }}
-          docker build -t $IMAGE ./app
+          cd ${{ vars.REPO_NAME_CLIENT }}
+          docker build -t ${{ steps.metadata.outputs.IMAGE }} ./app
         #######################################################################
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2.1.7
@@ -111,41 +154,40 @@ jobs:
       - name: Configure Docker to use gcloud
         run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
         #######################################################################
-      - name: Push to Artifact Registry
-        run: |
-          IMAGE=${{ steps.image_build.outputs.IMAGE }}
-          docker push $IMAGE
-# /////////////////////////////////////////////////////////////////////////////
-# /////////////////////////////////////////////////////////////////////////////
-# /////////////////////////////////////////////////////////////////////////////
-  deploy:
-    name: Deploy Services
-    runs-on: ubuntu-latest
-    needs:
-      - image-api
-      - image-webapp
+      # - name: Push to Artifact Registry
+      #   run: |
+      #     docker push ${{ steps.metadata.outputs.IMAGE }}
+  # ///////////////////////////////////////////////////////////////////////////
+  # ///////////////////////////////////////////////////////////////////////////
+  # ///////////////////////////////////////////////////////////////////////////
+  # deploy:
+  #   name: Deploy Services
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #     - image-api
+  #     - image-webapp
 
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        #######################################################################
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2.1.7
-        with:
-          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-        #######################################################################
-      - name: HashiCorp - Setup Terraform
-        uses: hashicorp/setup-terraform@v3.1.2
-        #######################################################################
-      - name: Terraform Init and Apply
-        run: |
-          cd terraform_configurations
-          terraform init
-          terraform apply -auto-approve \
-            -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
-            -var="region=${{ secrets.GCP_REGION }}" \
-            -var="artifact_registry_repo=${{ secrets.REGISTRY_REPO_NAME }}" \
-            -var="api_image_name=${{ needs.image-api.outputs.NAME }}" \
-            -var="api_image_tag=${{ needs.image-api.outputs.TAG }}" \
-            -var="webapp_image_name=${{ needs.image-webapp.outputs.NAME }}" \
-            -var="webapp_image_tag=${{ needs.image-webapp.outputs.TAG }}" \
+  #   steps:
+  #     - name: Check out repository
+  #       uses: actions/checkout@v4
+  #       #######################################################################
+  #     - name: Authenticate to Google Cloud
+  #       uses: google-github-actions/auth@v2.1.7
+  #       with:
+  #         credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+  #       #######################################################################
+  #     - name: HashiCorp - Setup Terraform
+  #       uses: hashicorp/setup-terraform@v3.1.2
+  #       #######################################################################
+  #     - name: Terraform Init and Apply
+  #       run: |
+  #         cd terraform_configurations
+  #         terraform init
+  #         terraform apply -auto-approve \
+  #           -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
+  #           -var="region=${{ secrets.GCP_REGION }}" \
+  #           -var="artifact_registry_repo=${{ secrets.REGISTRY_REPO_NAME }}" \
+  #           -var="api_image_name=${{ needs.image-api.outputs.NAME }}" \
+  #           -var="api_image_tag=${{ needs.image-api.outputs.TAG }}" \
+  #           -var="webapp_image_name=${{ needs.image-webapp.outputs.NAME }}" \
+  #           -var="webapp_image_tag=${{ needs.image-webapp.outputs.TAG }}" \
