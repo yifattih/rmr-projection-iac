@@ -1,18 +1,3 @@
-# variable "gcp" {
-#   type        = map(string)
-#   description = "Map with Google Cloud Platform project settings."
-# }
-
-# variable "api_service" {
-#   type        = map(string)
-#   description = "Map with service settings"
-# }
-
-# variable "client_service" {
-#   type        = map(string)
-#   description = "Map with service settings"
-# }
-
 variable "project_id" {
   type = string  
 }
@@ -22,10 +7,6 @@ variable "region" {
 }
 
 variable "api_service_name" {
-  type = string
-}
-
-variable "api_revision_suffix" {
   type = string
 }
 
@@ -42,10 +23,6 @@ variable "api_container_port" {
 }
 
 variable "client_service_name" {
-  type = string
-}
-
-variable "client_revision_suffix" {
   type = string
 }
 

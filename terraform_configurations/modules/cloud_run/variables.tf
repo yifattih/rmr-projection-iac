@@ -13,11 +13,6 @@ variable "name" {
   description = "The name of the Cloud Run service."
 }
 
-variable "revision_suffix" {
-  type        = string
-  description = "Suffix of the service revision name."
-}
-
 variable "environment" {
   type        = string
   description = "Name of the deployment environment."
