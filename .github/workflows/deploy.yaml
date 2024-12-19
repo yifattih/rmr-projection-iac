@@ -64,6 +64,7 @@ jobs:
           echo "GCP Artifact Registry repo to push  : $ENVIRONMENT"
           echo "Container image name                : $IMAGE_NAME"
           echo "Container image nametag             : $IMAGE_NAME_TAG"
+          echo "Image URI"                          : $IMAGE_URI
           echo "Service name                        : $SERVICE_NAME"
           echo "Service revision suffix             : $SERVICE_REVISION_SUFFIX"
           echo "Service container port to expose    : ${{  vars.CONTAINER_PORT_API  }}"
@@ -144,6 +145,7 @@ jobs:
           echo "GCP Artifact Registry repo to push  : $ENVIRONMENT"
           echo "Container image name                : $IMAGE_NAME"
           echo "Container image nametag             : $IMAGE_NAME_TAG"
+          echo "Image URI"                          : $IMAGE_URI
           echo "Service name                        : $SERVICE_NAME"
           echo "Service revision suffix             : $SERVICE_REVISION_SUFFIX"
           echo "Service container port to expose    : ${{  vars.CONTAINER_PORT_CLIENT  }}"
