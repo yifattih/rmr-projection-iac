@@ -178,28 +178,20 @@ jobs:
     needs:
       - image-api
       - image-client
-
     steps:
-        #######################################################################
-      - name: Checkout code
-        uses: actions/checkout@v4
-        #######################################################################
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2.1.7
-        with:
-          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-        #######################################################################
-      - name: Map data for Terraform
+      - name: Mapping data for Terraform
         id: tfdata
         run: |
-          echo "{\"name\": ${{ needs.image-api.outputs.SERVICE_NAME }}, \
+          GCP='{"project_id":${{ secrets.GCP_PROJECT_ID }}, "region":${{ secrets.GCP_REGION }}}'
+
+          API_SERVICE="{\"name\": ${{ needs.image-api.outputs.SERVICE_NAME }}, \
                         \"revision_suffix\": ${{ needs.image-api.outputs.SERVICE_REVISION_SUFFIX }}, \
                         \"environment\": ${{ needs.image-api.outputs.ENVIRONMENT }}, \
                         \"app\": ${{ project_id }}, \
                         \"image_uri\": ${{ needs.image-api.outputs.IMAGE_URI }},
                         \"container_port\": ${{ vars.CONTAINER_PORT_API }}}"
 
-          echo "{\"name\": ${{ needs.image-client.outputs.SERVICE_NAME }}, \
+          CLIENT_SERVICE="{\"name\": ${{ needs.image-client.outputs.SERVICE_NAME }}, \
                           \"revision_suffix\": ${{ needs.image-client.outputs.SERVICE_REVION_SUFFIX }}, \
                           \"environment\": ${{ needs.image-client.outputs.ENVIRONMENT }}, \
                           \"app_label\": ${{ project_id }}, \
@@ -209,6 +201,14 @@ jobs:
           echo "GCP=$GCP" >> "GITHUB_OUTPUT"
           echo "API_SERVICE=$API_SERVICE" >> "GITHUB_OUTPUT"
           echo "CLIENT_SERVICE=$CLIENT_SERVICE" >> "GITHUB_OUTPUT"
+        #######################################################################
+      - name: Checkout code
+        uses: actions/checkout@v4
+        #######################################################################
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2.1.7
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
         #######################################################################
       - name: HashiCorp - Setup Terraform
         uses: hashicorp/setup-terraform@v3.1.2
