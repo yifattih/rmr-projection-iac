@@ -189,7 +189,7 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
         #######################################################################
-      - name: Mapping data for Terraform
+      - name: Map data for Terraform
         id: tfdata
         run: |
           echo "{\"name\": ${{ needs.image-api.outputs.SERVICE_NAME }}, \
