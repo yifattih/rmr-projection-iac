@@ -207,6 +207,10 @@ jobs:
                                 --arg container_port "${{ vars.CONTAINER_PORT_CLIENT }}" \
                                 '$ARGS.named' )
 
+          echo $GCP
+          echo $API_SERVICE
+          echo $CLIENT_SERVICE
+                                
           echo "GCP=$GCP" >> "GITHUB_OUTPUT"
           echo "API_SERVICE=$API_SERVICE" >> "GITHUB_OUTPUT"
           echo "CLIENT_SERVICE=$CLIENT_SERVICE" >> "GITHUB_OUTPUT"
@@ -227,6 +231,6 @@ jobs:
           cd terraform_configurations
           terraform init
           terraform apply -auto-approve \
-            -var="gcp=${{ steps.tfdata.outputs.GCP }}" \
-            -var="api_service=${{ steps.tfdata.outputs.API_SERVICE }}" \
-            -var="client_service=${{ steps.tfdata.outputs.CLIENT_SERVICE }}"
+            -var='gcp=${{ steps.tfdata.outputs.GCP }}' \
+            -var='api_service=${{ steps.tfdata.outputs.API_SERVICE }}' \
+            -var='client_service=${{ steps.tfdata.outputs.CLIENT_SERVICE }}'
