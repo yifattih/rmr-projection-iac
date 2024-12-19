@@ -4,11 +4,11 @@ variable "gcp" {
 }
 
 variable "api_service" {
-  type = map(string)
-  description = "Map with service settings"  
+  type        = map(string)
+  description = "Map with service settings"
 }
 
 variable "client_service" {
-  type = map(string)
-  description = "Map with service settings"  
+  type        = map(string)
+  description = "Map with service settings"
 }
