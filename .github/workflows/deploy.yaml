@@ -192,8 +192,7 @@ jobs:
       - name: Mapping data for Terraform
         id: tfdata
         run: |
-          GCP='{"project_id":${{ secrets.GCP_PROJECT_ID }}, \
-                "region":${{ secrets.GCP_REGION }}}'
+          GCP='{"project_id":${{ secrets.GCP_PROJECT_ID }}, "region":${{ secrets.GCP_REGION }}}'
 
           API_SERVICE="{\"name\": ${{ needs.image-api.outputs.SERVICE_NAME }}, \
                         \"revision_suffix\": ${{ needs.image-api.outputs.SERVICE_REVISION_SUFFIX }}, \
