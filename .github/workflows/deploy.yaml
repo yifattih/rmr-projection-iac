@@ -182,51 +182,51 @@ jobs:
       - name: Mapping data for Terraform
         id: tfdata
         run: |
-          GCP='{ "project_id": "${{ secrets.GCP_PROJECT_ID }}", \
-                "region": "${{ secrets.GCP_REGION }}" }'
-          API_SERVICE='{"name": "${{ needs.image-api.outputs.SERVICE_NAME }}", \
-                        "revision_suffix": "${{ needs.image-api.outputs.SERVICE_REVISION_SUFFIX }}", \
-                        "environment": "${{ needs.image-api.outputs.ENVIRONMENT }}", \
-                        "app": "${{ secrets.GCP_PROJECT_ID }}", \
-                        "image_uri": "${{ needs.image-api.outputs.IMAGE_URI }}", \
-                        "container_port": "${{ vars.CONTAINER_PORT_API }}"}'
-          CLIENT_SERVICE='{"name": "${{ needs.image-client.outputs.SERVICE_NAME }}", \
-                          "revision_suffix": "${{ needs.image-client.outputs.SERVICE_REVISION_SUFFIX }}", \
-                          "environment": "${{ needs.image-client.outputs.ENVIRONMENT }}", \
-                          "app": "${{ secrets.GCP_PROJECT_ID }}", \
-                          "image_uri": "${{ needs.image-client.outputs.IMAGE_URI }}", \
-                          "container_port": "${{ vars.CONTAINER_PORT_CLIENT }}"}'
-          # GCP=$(  jq -n \
-          #           --arg project_id "${{ secrets.GCP_PROJECT_ID }}" \
-          #           --arg region "${{ secrets.GCP_REGION }}" \
-          #           '{ project_id: $project_id, region: $region }'  
-          #      )
-          # API_SERVICE=$(  jq -n \
-          #                     --arg name "${{ needs.image-api.outputs.SERVICE_NAME }}" \
-          #                     --arg revision_suffix "${{ needs.image-api.outputs.SERVICE_REVISION_SUFFIX }}" \
-          #                     --arg environment "${{ needs.image-api.outputs.ENVIRONMENT }}" \
-          #                     --arg app "${{ secrets.GCP_PROJECT_ID }}" \
-          #                     --arg image_uri "${{ needs.image-api.outputs.IMAGE_URI }}" \
-          #                     --arg container_port "${{ vars.CONTAINER_PORT_API }}" \
-          #                     '$ARGS.named'  
-          #               )
-          # CLIENT_SERVICE=$( jq -n \
-          #                       --arg name "${{ needs.image-client.outputs.SERVICE_NAME }}" \
-          #                       --arg revision_suffix "${{ needs.image-client.outputs.SERVICE_REVISION_SUFFIX }}" \
-          #                       --arg environment "${{ needs.image-client.outputs.ENVIRONMENT }}" \
-          #                       --arg app "${{ secrets.GCP_PROJECT_ID }}" \
-          #                       --arg image_uri "${{ needs.image-client.outputs.IMAGE_URI }}" \
-          #                       --arg container_port "${{ vars.CONTAINER_PORT_CLIENT }}" \
-          #                       '$ARGS.named' 
-          #                 )
+          # GCP='{ "project_id": "${{ secrets.GCP_PROJECT_ID }}", \
+          #       "region": "${{ secrets.GCP_REGION }}" }'
+          # API_SERVICE='{"name": "${{ needs.image-api.outputs.SERVICE_NAME }}", \
+          #               "revision_suffix": "${{ needs.image-api.outputs.SERVICE_REVISION_SUFFIX }}", \
+          #               "environment": "${{ needs.image-api.outputs.ENVIRONMENT }}", \
+          #               "app": "${{ secrets.GCP_PROJECT_ID }}", \
+          #               "image_uri": "${{ needs.image-api.outputs.IMAGE_URI }}", \
+          #               "container_port": "${{ vars.CONTAINER_PORT_API }}"}'
+          # CLIENT_SERVICE='{"name": "${{ needs.image-client.outputs.SERVICE_NAME }}", \
+          #                 "revision_suffix": "${{ needs.image-client.outputs.SERVICE_REVISION_SUFFIX }}", \
+          #                 "environment": "${{ needs.image-client.outputs.ENVIRONMENT }}", \
+          #                 "app": "${{ secrets.GCP_PROJECT_ID }}", \
+          #                 "image_uri": "${{ needs.image-client.outputs.IMAGE_URI }}", \
+          #                 "container_port": "${{ vars.CONTAINER_PORT_CLIENT }}"}'
+          # # GCP=$(  jq -n \
+          # #           --arg project_id "${{ secrets.GCP_PROJECT_ID }}" \
+          # #           --arg region "${{ secrets.GCP_REGION }}" \
+          # #           '{ project_id: $project_id, region: $region }'  
+          # #      )
+          # # API_SERVICE=$(  jq -n \
+          # #                     --arg name "${{ needs.image-api.outputs.SERVICE_NAME }}" \
+          # #                     --arg revision_suffix "${{ needs.image-api.outputs.SERVICE_REVISION_SUFFIX }}" \
+          # #                     --arg environment "${{ needs.image-api.outputs.ENVIRONMENT }}" \
+          # #                     --arg app "${{ secrets.GCP_PROJECT_ID }}" \
+          # #                     --arg image_uri "${{ needs.image-api.outputs.IMAGE_URI }}" \
+          # #                     --arg container_port "${{ vars.CONTAINER_PORT_API }}" \
+          # #                     '$ARGS.named'  
+          # #               )
+          # # CLIENT_SERVICE=$( jq -n \
+          # #                       --arg name "${{ needs.image-client.outputs.SERVICE_NAME }}" \
+          # #                       --arg revision_suffix "${{ needs.image-client.outputs.SERVICE_REVISION_SUFFIX }}" \
+          # #                       --arg environment "${{ needs.image-client.outputs.ENVIRONMENT }}" \
+          # #                       --arg app "${{ secrets.GCP_PROJECT_ID }}" \
+          # #                       --arg image_uri "${{ needs.image-client.outputs.IMAGE_URI }}" \
+          # #                       --arg container_port "${{ vars.CONTAINER_PORT_CLIENT }}" \
+          # #                       '$ARGS.named' 
+          # #                 )
 
-          echo $GCP
-          echo $API_SERVICE
-          echo $CLIENT_SERVICE
+          # echo $GCP
+          # echo $API_SERVICE
+          # echo $CLIENT_SERVICE
                                 
-          echo "GCP=$GCP" >> "$GITHUB_OUTPUT"
-          echo "API_SERVICE=$API_SERVICE" >> "$GITHUB_OUTPUT"
-          echo "CLIENT_SERVICE=$CLIENT_SERVICE" >> "$GITHUB_OUTPUT"
+          # echo "GCP=$GCP" >> "$GITHUB_OUTPUT"
+          # echo "API_SERVICE=$API_SERVICE" >> "$GITHUB_OUTPUT"
+          # echo "CLIENT_SERVICE=$CLIENT_SERVICE" >> "$GITHUB_OUTPUT"
       #######################################################################
       - name: Checkout code
         uses: actions/checkout@v4
@@ -239,11 +239,28 @@ jobs:
       - name: HashiCorp - Setup Terraform
         uses: hashicorp/setup-terraform@v3.1.2
       #######################################################################
+      # - name: Terraform Init and Apply
+      #   run: |
+      #     cd terraform_configurations
+      #     terraform init
+      #     terraform apply -auto-approve \
+      #       -var='gcp=${{ steps.tfdata.outputs.GCP }}' \
+      #       -var='api_service=${{ steps.tfdata.outputs.API_SERVICE }}' \
+      #       -var='client_service=${{ steps.tfdata.outputs.CLIENT_SERVICE }}'
       - name: Terraform Init and Apply
         run: |
           cd terraform_configurations
           terraform init
           terraform apply -auto-approve \
-            -var='gcp=${{ steps.tfdata.outputs.GCP }}' \
-            -var='api_service=${{ steps.tfdata.outputs.API_SERVICE }}' \
-            -var='client_service=${{ steps.tfdata.outputs.CLIENT_SERVICE }}'
+            -var='project_id=${{ secrets.GCP_PROJECT_ID }}' \
+            -var='region=${{ secrets.GCP_REGION }}' \
+            -var='api_service_name=${{ needs.image-api.outputs.SERVICE_NAME }}' \
+            -var='api_revision_suffix=${{ needs.image-api.outputs.SERVICE_REVISION_SUFFIX }}' \
+            -var='api_environment=${{ needs.image-api.outputs.ENVIRONMENT }}' \
+            -var='api_image_uri=${{ needs.image-api.outputs.IMAGE_URI }}' \
+            -var='api_container_port=${{ vars.CONTAINER_PORT_API }}' \
+            -var='client_service_name=${{ needs.image-client.outputs.SERVICE_NAME }}' \
+            -var='client_revision_suffix=${{ needs.image-client.outputs.SERVICE_REVISION_SUFFIX }}' \
+            -var='client_environment=${{ needs.image-client.outputs.ENVIRONMENT }}' \
+            -var='client_image_uri=${{ needs.image-client.outputs.IMAGE_URI }}' \
+            -var='client_container_port=${{ vars.CONTAINER_PORT_CLIENT }}'
