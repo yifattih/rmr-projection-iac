@@ -152,20 +152,20 @@ jobs:
           repository: ${{ vars.REPO_OWNER }}/${{ vars.REPO_NAME_CLIENT }}
           ref: ${{ steps.metadata.outputs.REPO_BRANCH }}
           path: ${{ vars.REPO_NAME_CLIENT }}
-        #######################################################################
+      #######################################################################
       - name: Build Docker Image
         run: |
           cd ${{ vars.REPO_NAME_CLIENT }}
           docker build -t ${{ steps.metadata.outputs.IMAGE }} ./app
-        #######################################################################
+      #######################################################################
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2.1.7
         with:
           credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-        #######################################################################
+      #######################################################################
       - name: Configure Docker to use gcloud
         run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
-        #######################################################################
+      #######################################################################
       - name: Push to Artifact Registry
         run: |
           docker push ${{ steps.metadata.outputs.IMAGE }}
@@ -179,10 +179,22 @@ jobs:
       - image-api
       - image-client
     steps:
+      #######################################################################
+      - name: Checkout code
+        uses: actions/checkout@v4
+      #######################################################################
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2.1.7
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+      #######################################################################
+      - name: HashiCorp - Setup Terraform
+        uses: hashicorp/setup-terraform@v3.1.2
+      #######################################################################
       - name: Mapping data for Terraform
         id: tfdata
         run: |
-          GCP=$( jq -n \
+                    GCP=$( jq -n \
                     --arg id "${{ secrets.GCP_PROJECT_ID }}" \
                     --arg reg "$${{ secrets.GCP_REGION }}" \
                     '{project_id: $id, region: $reg}' )
@@ -203,18 +215,7 @@ jobs:
           echo "GCP=$GCP" >> "GITHUB_OUTPUT"
           echo "API_SERVICE=$API_SERVICE" >> "GITHUB_OUTPUT"
           echo "CLIENT_SERVICE=$CLIENT_SERVICE" >> "GITHUB_OUTPUT"
-        #######################################################################
-      - name: Checkout code
-        uses: actions/checkout@v4
-        #######################################################################
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2.1.7
-        with:
-          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-        #######################################################################
-      - name: HashiCorp - Setup Terraform
-        uses: hashicorp/setup-terraform@v3.1.2
-        #######################################################################
+      #######################################################################
       - name: Terraform Init and Apply
         run: |
           cd terraform_configurations
