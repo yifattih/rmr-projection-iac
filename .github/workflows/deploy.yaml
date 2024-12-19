@@ -22,6 +22,7 @@ jobs:
       SERVICE_REVISION_SUFFIX: ${{ steps.metadata.outputs.SERVICE_REVISION_SUFFIX }}
       ENVIRONMENT: ${{ steps.metadata.outputs.ENVIRONMENT }}
       IMAGE_URI: ${{ steps.metadata.outputs.IMAGE_URI }}
+      IMAGE_NAME_TAG: ${{ steps.metadata.outputs.IMAGE_NAME_TAG }}
     steps:
       - name: Extract information and construct metadata
         id: metadata
@@ -103,6 +104,7 @@ jobs:
       SERVICE_REVISION_SUFFIX: ${{ steps.metadata.outputs.SERVICE_REVISION_SUFFIX }}
       ENVIRONMENT: ${{ steps.metadata.outputs.ENVIRONMENT }}
       IMAGE_URI: ${{ steps.metadata.outputs.IMAGE_URI }}
+      IMAGE_NAME_TAG: ${{ steps.metadata.outputs.IMAGE_NAME_TAG }}
     steps:
       - name: Extract information and construct metadata
         id: metadata
@@ -186,18 +188,19 @@ jobs:
       - name: Show data that will be passed for Terraform
         id: tfdata
         run: |
-          echo 'project_id: ${{ secrets.GCP_PROJECT_ID }}' \
-          echo 'region: ${{ secrets.GCP_REGION }}' \
-          echo 'api_service_name: ${{ needs.image-api.outputs.SERVICE_NAME }}' \
-          echo 'api_revision_suffix: ${{ needs.image-api.outputs.SERVICE_REVISION_SUFFIX }}' \
-          echo 'api_environment: ${{ needs.image-api.outputs.ENVIRONMENT }}' \
-          echo 'api_image_uri: ${{ needs.image-api.outputs.IMAGE_URI }}' \
-          echo 'api_container_port: ${{ vars.CONTAINER_PORT_API }}' \
-          echo 'client_service_name: ${{ needs.image-client.outputs.SERVICE_NAME }}' \
-          echo 'client_revision_suffix: ${{ needs.image-client.outputs.SERVICE_REVISION_SUFFIX }}' \
-          echo 'client_environment: ${{ needs.image-client.outputs.ENVIRONMENT }}' \
-          echo 'client_image_uri: ${{ needs.image-client.outputs.IMAGE_URI }}' \
-          echo 'client_container_port: ${{ vars.CONTAINER_PORT_CLIENT }}'
+          echo 'project_id                  : ${{ secrets.GCP_PROJECT_ID }}' \
+          echo 'region                      : ${{ secrets.GCP_REGION }}' \
+          echo 'api_service_name            : ${{ needs.image-api.outputs.SERVICE_NAME }}' \
+          echo 'api_revision_suffix         : ${{ needs.image-api.outputs.SERVICE_REVISION_SUFFIX }}' \
+          echo 'api_environment             : ${{ needs.image-api.outputs.ENVIRONMENT }}' \
+          echo 'api_image_uri               : ${{ needs.image-api.outputs.IMAGE_URI }}' \
+          echo 'api_container_port          : ${{ vars.CONTAINER_PORT_API }}' \
+          echo 'api_name_tag'               : ${{ needs.image-api.outputs.IMAGE_NAME_TAG }} \
+          echo 'client_service_name         : ${{ needs.image-client.outputs.SERVICE_NAME }}' \
+          echo 'client_revision_suffix      : ${{ needs.image-client.outputs.SERVICE_REVISION_SUFFIX }}' \
+          echo 'client_environment          : ${{ needs.image-client.outputs.ENVIRONMENT }}' \
+          echo 'client_image_uri            : ${{ needs.image-client.outputs.IMAGE_URI }}' \
+          echo 'client_container_port       : ${{ vars.CONTAINER_PORT_CLIENT }}'
       #######################################################################
       - name: Checkout code
         uses: actions/checkout@v4
@@ -212,6 +215,10 @@ jobs:
       #######################################################################
       - name: Terraform Init and Apply
         run: |
+          # Construct image uri's
+          API_IMAGE_URI="${{ env.IMAGE_REPO_URL }}/${{ needs.image-api.outputs.ENVIRONMENT }}/${{ needs.image-api.outputs.IMAGE_NAME_TAG }}"
+          CLIENT_IMAGE_URI="${{ env.IMAGE_REPO_URL }}/${{ needs.image-client.outputs.ENVIRONMENT }}/${{ needs.image-client.outputs.IMAGE_NAME_TAG }}"
+
           cd terraform_configurations
           terraform init
           terraform apply -auto-approve \
@@ -220,10 +227,10 @@ jobs:
             -var='api_service_name=${{ needs.image-api.outputs.SERVICE_NAME }}' \
             -var='api_revision_suffix=${{ needs.image-api.outputs.SERVICE_REVISION_SUFFIX }}' \
             -var='api_environment=${{ needs.image-api.outputs.ENVIRONMENT }}' \
-            -var='api_image_uri=${{ needs.image-api.outputs.IMAGE_URI }}' \
+            -var='api_image_uri=$API_IMAGE_URI' \
             -var='api_container_port=${{ vars.CONTAINER_PORT_API }}' \
             -var='client_service_name=${{ needs.image-client.outputs.SERVICE_NAME }}' \
             -var='client_revision_suffix=${{ needs.image-client.outputs.SERVICE_REVISION_SUFFIX }}' \
             -var='client_environment=${{ needs.image-client.outputs.ENVIRONMENT }}' \
-            -var='client_image_uri=${{ needs.image-client.outputs.IMAGE_URI }}' \
+            -var='client_image_uri=$CLIENT_IMAGE_URI' \
             -var='client_container_port=${{ vars.CONTAINER_PORT_CLIENT }}'
