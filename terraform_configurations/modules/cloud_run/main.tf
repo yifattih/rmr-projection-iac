@@ -21,7 +21,7 @@ resource "google_cloud_run_service" "service" {
     spec {
       # Define container
       containers {
-        name  = var.name - var.revision_suffix
+        name  = var.name
         image = var.image_uri
         ports {
           name           = "http1"
