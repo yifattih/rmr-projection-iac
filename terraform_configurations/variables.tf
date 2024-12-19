@@ -33,7 +33,7 @@ variable "api_environment" {
   type = string
 }
 
-variable "api_image_uri" {
+variable "api_image_name_tag" {
   type = string
 }
 
@@ -53,7 +53,7 @@ variable "client_environment" {
   type = string
 }
 
-variable "client_image_uri" {
+variable "client_image_name_tag" {
   type = string
 }
 

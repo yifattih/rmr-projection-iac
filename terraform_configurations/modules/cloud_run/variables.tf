@@ -23,7 +23,7 @@ variable "environment" {
   description = "Name of the deployment environment."
 }
 
-variable "image_uri" {
+variable "image_name_tag" {
   type        = string
   description = "The container image uri."
 }

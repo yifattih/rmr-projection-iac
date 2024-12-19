@@ -11,7 +11,7 @@ module "api_service" {
   name            = var.api_service_name
   revision_suffix = var.api_revision_suffix
   environment     = var.api_environment
-  image_uri       = var.api_image_uri
+  image_name_tag       = var.api_image_name_tag
   container_port  = var.api_container_port
 }
 
@@ -22,7 +22,7 @@ module "webapp_service" {
   name            = var.client_service_name
   revision_suffix = var.client_revision_suffix
   environment     = var.client_environment
-  image_uri       = var.client_image_uri
+  image_name_tag  = var.client_image_name_tag
   container_port  = var.client_container_port
   env_vars        = { API_URL = module.api_service.url }
 }

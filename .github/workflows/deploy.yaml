@@ -227,10 +227,10 @@ jobs:
             -var='api_service_name=${{ needs.image-api.outputs.SERVICE_NAME }}' \
             -var='api_revision_suffix=${{ needs.image-api.outputs.SERVICE_REVISION_SUFFIX }}' \
             -var='api_environment=${{ needs.image-api.outputs.ENVIRONMENT }}' \
-            -var='api_image_uri=$API_IMAGE_URI' \
+            -var='api_image_name_tag=${{ needs.image-api.outputs.IMAGE_NAME_TAG }}' \
             -var='api_container_port=${{ vars.CONTAINER_PORT_API }}' \
             -var='client_service_name=${{ needs.image-client.outputs.SERVICE_NAME }}' \
             -var='client_revision_suffix=${{ needs.image-client.outputs.SERVICE_REVISION_SUFFIX }}' \
             -var='client_environment=${{ needs.image-client.outputs.ENVIRONMENT }}' \
-            -var='client_image_uri=$CLIENT_IMAGE_URI' \
+            -var='client_image_name_tag=${{ needs.image-client.outputs.IMAGE_NAME_TAG }}' \
             -var='client_container_port=${{ vars.CONTAINER_PORT_CLIENT }}'

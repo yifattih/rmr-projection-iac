@@ -23,7 +23,7 @@ resource "google_cloud_run_service" "service" {
       # Define container
       containers {
         # name  = var.name
-        image = var.image_uri
+        image =  "${var.region}-docker.pkg.dev/${var.project_id}/${var.environment}/${var.image_name_tag}"
         ports {
           name           = "http1"
           container_port = var.container_port
