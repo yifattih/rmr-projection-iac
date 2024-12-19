@@ -29,7 +29,7 @@ resource "google_cloud_run_service" "service" {
           container_port = var.container_port
         }
         env {
-          name  = length(var.env_vars) != 0 ? "API_URL" : null
+          name  = length(var.env_vars) != 0 ? "API_URL" : "none"
           value = lookup(var.env_vars, "API_URL", null)
         }
       }
