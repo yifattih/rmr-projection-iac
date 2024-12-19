@@ -1,7 +1,7 @@
 resource "google_cloud_run_service" "service" {
-  name     = var.name
-  location = var.region
   project  = var.project_id
+  location = var.region
+  name     = var.name
 
   # Service template definition
   template {
@@ -9,22 +9,23 @@ resource "google_cloud_run_service" "service" {
       annotations = {
         "autoscaling.knative.dev/minScale" = "1" # Minimum instances
         "autoscaling.knative.dev/maxScale" = "10" # Maximum instances
+        "run.googleapis.com/revision-suffix" = var.revision_suffix
       }
       labels     = {
         # Labels for identifying your service
-        "env" = "production"
-        "app" = "rmr-projection"
+        "env" = var.environment
+        "app" = var.project_id
       }
     }
     
     spec {
       # Define container
       containers {
-        name  = "${var.image_name}-${var.image_tag}"
-        image = "${var.region}-docker.pkg.dev/${var.project_id}/${var.artifact_repo_name}/${var.image_name}:${var.image_tag}" # Docker image URL
+        name  = var.name-var.revision_suffix
+        image = var.image_uri
         ports {
           name           = "http1"
-          container_port = var.port # Replace with your desired container port
+          container_port = var.container_port
         }
         env {
           name  = var.env_vars != {} ? "API_URL" : null

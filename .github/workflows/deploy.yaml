@@ -17,6 +17,11 @@ jobs:
   image-api:
     name: "API: Construct Metadata, Checkout Code, Build Image and Push"
     runs-on: ubuntu-latest
+    outputs:
+      SERVICE_NAME: ${{  steps.metadata.outputs.SERVICE_NAME  }}
+      SERVICE_REVISION_SUFFIX: ${{ steps.metadata.outputs.SERVICE_REVISION_SUFFIX }}
+      ENVIRONMENT: ${{ steps.metadata.outputs.ENVIRONMENT }}
+      IMAGE_URI: ${{ steps.metadata.outputs.IMAGE_URI }}
     steps:
       - name: Extract information and construct metadata
         id: metadata
@@ -38,17 +43,17 @@ jobs:
           fi
 
           IMAGE_NAME_TAG="$IMAGE_NAME:$TAG"
-          IMAGE="${{ env.IMAGE_REPO_URL }}/$ENVIRONMENT/$IMAGE_NAME_TAG"
+          IMAGE_URI="${{ env.IMAGE_REPO_URL }}/$ENVIRONMENT/$IMAGE_NAME_TAG"
           SERVICE_NAME="$IMAGE_NAME-$ENVIRONMENT"
-          SERVICE_REVISION="$IMAGE_NAME-$TAG"
+          SERVICE_REVISION_SUFFIX="$TAG"
 
           echo "IMAGE_NAME=$IMAGE_NAME" >> "$GITHUB_OUTPUT"
           echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
           echo "IMAGE_NAME_TAG=$IMAGE_NAME_TAG" >> "$GITHUB_OUTPUT"
           echo "ENVIRONMENT=$ENVIRONMENT" >> "$GITHUB_OUTPUT"
           echo "REPO_BRANCH=$REPO_BRANCH" >> "$GITHUB_OUTPUT"
-          echo "IMAGE=$IMAGE" >> "$GITHUB_OUTPUT"
-          echo "SERVICE_REVISION=$SERVICE_REVISION" >> "$GITHUB_OUTPUT"
+          echo "IMAGE_URI=$IMAGE_URI" >> "$GITHUB_OUTPUT"
+          echo "SERVICE_REVISION_SUFFIX=$SERVICE_REVISION_SUFFIX" >> "$GITHUB_OUTPUT"
 
           echo "GitHub repo owner                   : ${{  vars.REPO_OWNER  }}"
           echo "GitHub repo                         : ${{  vars.REPO_NAME_API  }}"
@@ -58,9 +63,9 @@ jobs:
           echo "GCP Artifact Registry repo to push  : $ENVIRONMENT"
           echo "Container image name                : $IMAGE_NAME"
           echo "Container image nametag             : $IMAGE_NAME_TAG"
-          echo "Cloud Run service name              : $SERVICE_NAME"
-          echo "Cloud Run service revision name     : $SERVICE_REVISION"
-          echo "Cloud Run service port to expose    : ${{  vars.CONTAINER_PORT_API  }}"
+          echo "Service name                        : $SERVICE_NAME"
+          echo "Service revision suffix             : $SERVICE_REVISION_SUFFIX"
+          echo "Service container port to expose    : ${{  vars.CONTAINER_PORT_API  }}"
       ######################################################################### 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -91,6 +96,11 @@ jobs:
   image-client:
     name: "Client: Construct Metadata, Checkout Code, Build Image and Push"
     runs-on: ubuntu-latest
+    outputs:
+      SERVICE_NAME: ${{  steps.metadata.outputs.SERVICE_NAME  }}
+      SERVICE_REVISION_SUFFIX: ${{ steps.metadata.outputs.SERVICE_REVISION_SUFFIX }}
+      ENVIRONMENT: ${{ steps.metadata.outputs.ENVIRONMENT }}
+      IMAGE_URI: ${{ steps.metadata.outputs.IMAGE_URI }}
     steps:
       - name: Extract information and construct metadata
         id: metadata
@@ -112,17 +122,17 @@ jobs:
           fi
 
           IMAGE_NAME_TAG="$IMAGE_NAME:$TAG"
-          IMAGE="${{ env.IMAGE_REPO_URL }}/$ENVIRONMENT/$IMAGE_NAME_TAG"
+          IMAGE_URI="${{ env.IMAGE_REPO_URL }}/$ENVIRONMENT/$IMAGE_NAME_TAG"
           SERVICE_NAME="$IMAGE_NAME-$ENVIRONMENT"
-          SERVICE_REVISION="$IMAGE_NAME-$TAG"
+          SERVICE_REVISION_SUFFIX="$TAG"
 
           echo "IMAGE_NAME=$IMAGE_NAME" >> "$GITHUB_OUTPUT"
           echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
           echo "IMAGE_NAME_TAG=$IMAGE_NAME_TAG" >> "$GITHUB_OUTPUT"
           echo "ENVIRONMENT=$ENVIRONMENT" >> "$GITHUB_OUTPUT"
           echo "REPO_BRANCH=$REPO_BRANCH" >> "$GITHUB_OUTPUT"
-          echo "IMAGE=$IMAGE" >> "$GITHUB_OUTPUT"
-          echo "SERVICE_REVISION=$SERVICE_REVISION" >> "$GITHUB_OUTPUT"
+          echo "IMAGE_URI=$IMAGE_URI" >> "$GITHUB_OUTPUT"
+          echo "SERVICE_REVISION_SUFFIX=$SERVICE_REVISION_SUFFIX" >> "$GITHUB_OUTPUT"
 
           echo "GitHub repo owner                   : vars.REPO_OWNER"
           echo "GitHub repo                         : vars.REPO_NAME_CLIENT"
@@ -132,9 +142,9 @@ jobs:
           echo "GCP Artifact Registry repo to push  : $ENVIRONMENT"
           echo "Container image name                : $IMAGE_NAME"
           echo "Container image nametag             : $IMAGE_NAME_TAG"
-          echo "Cloud Run service name              : $SERVICE_NAME"
-          echo "Cloud Run service revision name     : $SERVICE_REVISION"
-          echo "Cloud Run service port to expose    : ${{  vars.CONTAINER_PORT_CLIENT  }}"
+          echo "Service name                        : $SERVICE_NAME"
+          echo "Service revision suffix             : $SERVICE_REVISION_SUFFIX"
+          echo "Service container port to expose    : ${{  vars.CONTAINER_PORT_CLIENT  }}"
       ######################################################################### 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -162,34 +172,53 @@ jobs:
   # ///////////////////////////////////////////////////////////////////////////
   # ///////////////////////////////////////////////////////////////////////////
   # ///////////////////////////////////////////////////////////////////////////
-  # deploy:
-  #   name: Deploy Services
-  #   runs-on: ubuntu-latest
-  #   needs:
-  #     - image-api
-  #     - image-webapp
+  deploy:
+    name: Deploy Services
+    runs-on: ubuntu-latest
+    needs:
+      - image-api
+      - image-client
 
-  #   steps:
-  #     - name: Check out repository
-  #       uses: actions/checkout@v4
-  #       #######################################################################
-  #     - name: Authenticate to Google Cloud
-  #       uses: google-github-actions/auth@v2.1.7
-  #       with:
-  #         credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-  #       #######################################################################
-  #     - name: HashiCorp - Setup Terraform
-  #       uses: hashicorp/setup-terraform@v3.1.2
-  #       #######################################################################
-  #     - name: Terraform Init and Apply
-  #       run: |
-  #         cd terraform_configurations
-  #         terraform init
-  #         terraform apply -auto-approve \
-  #           -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
-  #           -var="region=${{ secrets.GCP_REGION }}" \
-  #           -var="artifact_registry_repo=${{ secrets.REGISTRY_REPO_NAME }}" \
-  #           -var="api_image_name=${{ needs.image-api.outputs.NAME }}" \
-  #           -var="api_image_tag=${{ needs.image-api.outputs.TAG }}" \
-  #           -var="webapp_image_name=${{ needs.image-webapp.outputs.NAME }}" \
-  #           -var="webapp_image_tag=${{ needs.image-webapp.outputs.TAG }}" \
+    steps:
+        #######################################################################
+      - name: Checkout code
+        uses: actions/checkout@v4
+        #######################################################################
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2.1.7
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        #######################################################################
+      - name: Mapping data for Terraform
+        id: tfdata
+        run: |
+          GCP="{\"project_id\":${{ secrets.GCP_PROJECT_ID }}, \
+                \"region\":${{ secrets.GCP_REGION }}}"
+          API_SERVICE="{\"name\": ${{ needs.image-api.outputs.SERVICE_NAME }}, \
+                        \"revision_suffix\": ${{ needs.image-api.outputs.SERVICE_REVISION_SUFFIX }}, \
+                        \"environment\": ${{ needs.image-api.outputs.ENVIRONMENT }}, \
+                        \"app\": ${{ project_id }}, \
+                        \"image_uri\": ${{ needs.image-api.outputs.IMAGE_URI }},
+                        \"container_port\": ${{ vars.CONTAINER_PORT_API }}}"
+          CLIENT_SERVICE="{\"name\": ${{ needs.image-client.outputs.SERVICE_NAME }}, \
+                          \"revision_suffix\": ${{ needs.image-client.outputs.SERVICE_REVION_SUFFIX }}, \
+                          \"environment\": ${{ needs.image-client.outputs.ENVIRONMENT }}, \
+                          \"app_label\": ${{ project_id }}, \
+                          \"image_uri\": ${{ needs.image-client.outputs.IMAGE_URI }},
+                          \"container_port\": ${{ vars.CONTAINER_PORT_CLIENT }}}"
+          
+          echo "GCP=$GCP" >> "GITHUB_OUTPUT"
+          echo "API_SERVICE=$API_SERVICE" >> "GITHUB_OUTPUT"
+          echo "CLIENT_SERVICE=$CLIENT_SERVICE" >> "GITHUB_OUTPUT"
+        #######################################################################
+      - name: HashiCorp - Setup Terraform
+        uses: hashicorp/setup-terraform@v3.1.2
+        #######################################################################
+      - name: Terraform Init and Apply
+        run: |
+          cd terraform_configurations
+          terraform init
+          terraform apply -auto-approve \
+            -var="gcp=${{ steps.tfdata.outputs.GCP }}" \
+            -var="api_service=${{ steps.tfdata.outputs.API_SERVICE }}" \
+            -var="client_service=${{ steps.tfdata.outputs.CLIENT_SERVICE }}"
