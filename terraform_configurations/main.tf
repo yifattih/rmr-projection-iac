@@ -1,8 +1,8 @@
-module "iam" {
-  source     = "./modules/iam"
-  project_id = var.project_id
-  region     = var.region
-}
+# module "iam" {
+#   source     = "./modules/iam"
+#   project_id = var.project_id
+#   region     = var.region
+# }
 
 module "api_service" {
   source          = "./modules/cloud_run"
