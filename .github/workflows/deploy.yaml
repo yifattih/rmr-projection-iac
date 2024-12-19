@@ -192,21 +192,22 @@ jobs:
       - name: Mapping data for Terraform
         id: tfdata
         run: |
-          GCP="{\"project_id\":${{ secrets.GCP_PROJECT_ID }}, \
-                \"region\":${{ secrets.GCP_REGION }}}"
+
+          GCP="{project_id:${{ secrets.GCP_PROJECT_ID }}, region:${{ secrets.GCP_REGION }}}"
           API_SERVICE="{\"name\": ${{ needs.image-api.outputs.SERVICE_NAME }}, \
                         \"revision_suffix\": ${{ needs.image-api.outputs.SERVICE_REVISION_SUFFIX }}, \
                         \"environment\": ${{ needs.image-api.outputs.ENVIRONMENT }}, \
                         \"app\": ${{ project_id }}, \
                         \"image_uri\": ${{ needs.image-api.outputs.IMAGE_URI }},
                         \"container_port\": ${{ vars.CONTAINER_PORT_API }}}"
+
           CLIENT_SERVICE="{\"name\": ${{ needs.image-client.outputs.SERVICE_NAME }}, \
                           \"revision_suffix\": ${{ needs.image-client.outputs.SERVICE_REVION_SUFFIX }}, \
                           \"environment\": ${{ needs.image-client.outputs.ENVIRONMENT }}, \
                           \"app_label\": ${{ project_id }}, \
                           \"image_uri\": ${{ needs.image-client.outputs.IMAGE_URI }},
                           \"container_port\": ${{ vars.CONTAINER_PORT_CLIENT }}}"
-          
+
           echo "GCP=$GCP" >> "GITHUB_OUTPUT"
           echo "API_SERVICE=$API_SERVICE" >> "GITHUB_OUTPUT"
           echo "CLIENT_SERVICE=$CLIENT_SERVICE" >> "GITHUB_OUTPUT"
