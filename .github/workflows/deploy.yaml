@@ -194,7 +194,7 @@ jobs:
       - name: Mapping data for Terraform
         id: tfdata
         run: |
-                    GCP=$( jq -n \
+          GCP=$( jq -n \
                     --arg id "${{ secrets.GCP_PROJECT_ID }}" \
                     --arg reg "$${{ secrets.GCP_REGION }}" \
                     '{project_id: $id, region: $reg}' )
@@ -204,7 +204,6 @@ jobs:
                         \"app\": ${{ project_id }}, \
                         \"image_uri\": ${{ needs.image-api.outputs.IMAGE_URI }},
                         \"container_port\": ${{ vars.CONTAINER_PORT_API }}}"
-
           CLIENT_SERVICE="{\"name\": ${{ needs.image-client.outputs.SERVICE_NAME }}, \
                           \"revision_suffix\": ${{ needs.image-client.outputs.SERVICE_REVION_SUFFIX }}, \
                           \"environment\": ${{ needs.image-client.outputs.ENVIRONMENT }}, \
