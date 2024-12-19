@@ -186,34 +186,34 @@ jobs:
           sudo apt-get install jq # install jq
 
           GCP=$(  jq -n \
-                    --arg project_id "${{ secrets.GCP_PROJECT_ID }}" \
-                    --arg region "${{ secrets.GCP_REGION }}" \
+                    --arg project_id ${{ secrets.GCP_PROJECT_ID }} \
+                    --arg region ${{ secrets.GCP_REGION }} \
                     '{project_id: $project_id, region: $region}'  
                 )
           API_SERVICE=$(  jq -n \
-                              --arg name "${{ needs.image-api.outputs.SERVICE_NAME }}" \
-                              --arg revision_suffix "${{ needs.image-api.outputs.SERVICE_REVISION_SUFFIX }}" \
-                              --arg environment "${{ needs.image-api.outputs.ENVIRONMENT }}" \
-                              --arg app "${{ secrets.GCP_PROJECT_ID }}" \
-                              --arg image_uri "${{ needs.image-api.outputs.IMAGE_URI }}" \
-                              --arg container_port "${{ vars.CONTAINER_PORT_API }}" \
+                              --arg name ${{ needs.image-api.outputs.SERVICE_NAME }} \
+                              --arg revision_suffix ${{ needs.image-api.outputs.SERVICE_REVISION_SUFFIX }} \
+                              --arg environment ${{ needs.image-api.outputs.ENVIRONMENT }} \
+                              --arg app ${{ secrets.GCP_PROJECT_ID }} \
+                              --arg image_uri ${{ needs.image-api.outputs.IMAGE_URI }} \
+                              --arg container_port ${{ vars.CONTAINER_PORT_API }} \
                               '$ARGS.named'  )
           CLIENT_SERVICE=$( jq -n \
-                                --arg name "${{ needs.image-client.outputs.SERVICE_NAME }}" \
-                                --arg revision_suffix "${{ needs.image-client.outputs.SERVICE_REVISION_SUFFIX }}" \
-                                --arg environment "${{ needs.image-client.outputs.ENVIRONMENT }}" \
-                                --arg app "${{ secrets.GCP_PROJECT_ID }}" \
-                                --arg image_uri "${{ needs.image-client.outputs.IMAGE_URI }}" \
-                                --arg container_port "${{ vars.CONTAINER_PORT_CLIENT }}" \
+                                --arg name ${{ needs.image-client.outputs.SERVICE_NAME }} \
+                                --arg revision_suffix ${{ needs.image-client.outputs.SERVICE_REVISION_SUFFIX }} \
+                                --arg environment ${{ needs.image-client.outputs.ENVIRONMENT }} \
+                                --arg app ${{ secrets.GCP_PROJECT_ID }} \
+                                --arg image_uri ${{ needs.image-client.outputs.IMAGE_URI }} \
+                                --arg container_port ${{ vars.CONTAINER_PORT_CLIENT }} \
                                 '$ARGS.named' )
 
           echo $GCP
           echo $API_SERVICE
           echo $CLIENT_SERVICE
                                 
-          echo "GCP=$GCP" >> "GITHUB_OUTPUT"
-          echo "API_SERVICE=$API_SERVICE" >> "GITHUB_OUTPUT"
-          echo "CLIENT_SERVICE=$CLIENT_SERVICE" >> "GITHUB_OUTPUT"
+          echo "GCP=$GCP" >> "$GITHUB_OUTPUT"
+          echo "API_SERVICE=$API_SERVICE" >> "$GITHUB_OUTPUT"
+          echo "CLIENT_SERVICE=$CLIENT_SERVICE" >> "$GITHUB_OUTPUT"
       #######################################################################
       - name: Checkout code
         uses: actions/checkout@v4
