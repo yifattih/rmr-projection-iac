@@ -6,6 +6,7 @@ resource "google_cloud_run_service" "service" {
   # Service template definition
   template {
     metadata {
+      name = var.name
       annotations = {
         "autoscaling.knative.dev/minScale" = "1" # Minimum instances
         "autoscaling.knative.dev/maxScale" = "10" # Maximum instances
