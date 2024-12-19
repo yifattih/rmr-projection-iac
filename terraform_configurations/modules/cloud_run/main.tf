@@ -6,11 +6,11 @@ resource "google_cloud_run_service" "service" {
   # Service template definition
   template {
     metadata {
-      name = var.name
+      # name = var.name
       annotations = {
         "autoscaling.knative.dev/minScale" = "1" # Minimum instances
         "autoscaling.knative.dev/maxScale" = "10" # Maximum instances
-        "run.googleapis.com/revision-suffix" = var.revision_suffix
+        # "run.googleapis.com/revision-suffix" = var.revision_suffix
       }
       labels     = {
         # Labels for identifying your service
@@ -22,7 +22,7 @@ resource "google_cloud_run_service" "service" {
     spec {
       # Define container
       containers {
-        name  = var.name
+        # name  = var.name
         image = var.image_uri
         ports {
           name           = "http1"
