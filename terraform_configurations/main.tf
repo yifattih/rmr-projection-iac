@@ -22,5 +22,5 @@ module "webapp_service" {
   environment     = var.client_environment
   image_name_tag  = var.client_image_name_tag
   container_port  = var.client_container_port
-  env_vars        = { API_URL = "${module.api_service.url}/rmr/" }
+  env_vars        = { API_URL = "${module.api_service.url}" }
 }
