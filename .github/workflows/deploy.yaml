@@ -208,8 +208,8 @@ jobs:
       #######################################################################
       - name: Terraform Init and Apply
         env:
-          TF_VAR_bucket_name: ${{ secrets.BUCKET_NAME }}
-          TF_VAR_bucket_prefix: ${{ secrets.BUCKET_PREFIX }}
+          bucket_name: ${{ secrets.BUCKET_NAME }}
+          bucket_prefix: ${{ secrets.BUCKET_PREFIX }}
         run: |
           cd terraform
           terraform init
