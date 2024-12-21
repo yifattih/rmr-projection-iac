@@ -6,6 +6,7 @@ module "api_service" {
   environment     = var.api_environment
   image_name_tag  = var.api_image_name_tag
   container_port  = var.api_container_port
+  service_account_name = var.service_account_name
 }
 
 module "webapp_service" {
@@ -17,4 +18,5 @@ module "webapp_service" {
   image_name_tag  = var.client_image_name_tag
   container_port  = var.client_container_port
   env_vars        = { API_URL = "${module.api_service.url}" }
+  service_account_name = var.service_account_name
 }
