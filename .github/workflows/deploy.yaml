@@ -210,9 +210,9 @@ jobs:
         run: |
           cd terraform
           terraform init \
-            -backend-config="bucket=${{ secrets.BUCKET_NAME }}" \
-            -backend-config="prefix=${{ secrets.BUCKET_PREFIX }}" \
-            -backend-config="credentials=${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}"
+            -backend-config="bucket=${{ secrets.BUCKET_NAME }}"
+            # -backend-config="bucket=${{ secrets.BUCKET_NAME }}" \
+            # -backend-config="prefix=${{ secrets.BUCKET_PREFIX }}" \
           terraform apply -auto-approve \
             -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
             -var="region=${{ secrets.GCP_REGION }}" \
