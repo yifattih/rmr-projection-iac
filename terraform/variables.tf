@@ -38,10 +38,10 @@ variable "client_container_port" {
   type = number
 }
 
-variable "bucket_name" {
-  type = string
-}
+# variable "bucket_name" {
+#   type = string
+# }
 
-variable "bucket_prefix" {
-  type = string
-}
+# variable "bucket_prefix" {
+#   type = string
+# }
