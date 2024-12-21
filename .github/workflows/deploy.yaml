@@ -9,7 +9,6 @@ on:
   push:
     branches:
       - main
-      - core/*
 
 jobs:
   # ///////////////////////////////////////////////////////////////////////////
@@ -29,8 +28,7 @@ jobs:
           account_url="https://github.com/${{ vars.REPO_OWNER }}"
           repo_url="$account_url/${{ vars.REPO_NAME_API }}.git"
 
-          IMAGE_NAME="api"
-          TAG="$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")"
+          TAG="$(git ls-remote --tags $repo_url | grep -o "v.*" | sort -u -r | head -n 1)"
 
           if echo $TAG | grep -q "alpha"; then
               REPO_BRANCH="alpha"
@@ -42,6 +40,7 @@ jobs:
               DEPLOYMENT_FOR="production environment"
           fi
 
+          IMAGE_NAME="api"
           IMAGE_NAME_TAG="$IMAGE_NAME:$TAG"
           IMAGE_URI="${{ env.IMAGE_REPO_URL }}/$ENVIRONMENT/$IMAGE_NAME_TAG"
           SERVICE_NAME="$IMAGE_NAME-$ENVIRONMENT"
@@ -109,8 +108,7 @@ jobs:
           account_url="https://github.com/${{ vars.REPO_OWNER }}"
           repo_url="$account_url/${{ vars.REPO_NAME_CLIENT }}.git"
 
-          IMAGE_NAME="client"
-          TAG="$(git ls-remote --tags $repo_url | sort -u -r | head -n 1 | grep -o "v.*")"
+          TAG="$(git ls-remote --tags $repo_url | grep -o "v.*" | sort -u -r | head -n 1)"
 
           if echo $TAG | grep -q "alpha"; then
               REPO_BRANCH="alpha"
@@ -122,6 +120,7 @@ jobs:
               DEPLOYMENT_FOR="production environment"
           fi
 
+          IMAGE_NAME="client"
           IMAGE_NAME_TAG="$IMAGE_NAME:$TAG"
           IMAGE_URI="${{ env.IMAGE_REPO_URL }}/$ENVIRONMENT/$IMAGE_NAME_TAG"
           SERVICE_NAME="$IMAGE_NAME-$ENVIRONMENT"
@@ -208,7 +207,7 @@ jobs:
       #######################################################################
       - name: Terraform Init and Apply
         run: |
-          cd terraform_configurations
+          cd terraform
           terraform init
           terraform apply -auto-approve \
             -var='project_id=${{ secrets.GCP_PROJECT_ID }}' \
