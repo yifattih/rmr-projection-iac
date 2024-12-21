@@ -215,6 +215,7 @@ jobs:
           terraform apply -auto-approve \
             -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
             -var="region=${{ secrets.GCP_REGION }}" \
+            -var="service_account_name=${{ secrets.SERVICE_ACCOUNT_NAME }}" \
             -var="api_service_name=${{ needs.image-api.outputs.SERVICE_NAME }}" \
             -var="api_environment=${{ needs.image-api.outputs.ENVIRONMENT }}" \
             -var="api_image_name_tag=${{ needs.image-api.outputs.IMAGE_NAME_TAG }}" \

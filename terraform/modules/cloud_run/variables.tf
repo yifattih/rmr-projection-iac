@@ -33,3 +33,7 @@ variable "env_vars" {
   description = "Environment variables for the service."
   default     = {}
 }
+
+variable "service_account_name" {
+  type = string  
+}
