@@ -37,3 +37,11 @@ variable "client_image_name_tag" {
 variable "client_container_port" {
   type = number
 }
+
+variable "bucket" {
+  type = string
+}
+
+variable "bucket_prefix" {
+  type = string
+}

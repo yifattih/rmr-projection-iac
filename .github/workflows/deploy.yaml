@@ -43,6 +43,7 @@ jobs:
           IMAGE_NAME="api"
           IMAGE_NAME_TAG="$IMAGE_NAME:$TAG"
           IMAGE_URI="${{ env.IMAGE_REPO_URL }}/$ENVIRONMENT/$IMAGE_NAME_TAG"
+
           SERVICE_NAME="$IMAGE_NAME-$ENVIRONMENT"
           SERVICE_REVISION_SUFFIX="$TAG"
 
@@ -212,6 +213,8 @@ jobs:
           terraform apply -auto-approve \
             -var='project_id=${{ secrets.GCP_PROJECT_ID }}' \
             -var='region=${{ secrets.GCP_REGION }}' \
+            -var='bucket=${{ secrets.BUCKET_NAME }}' \
+            -var='bucket_prefix=${{ secrets.BUCKET_PREFIX }}' \
             -var='api_service_name=${{ needs.image-api.outputs.SERVICE_NAME }}' \
             -var='api_environment=${{ needs.image-api.outputs.ENVIRONMENT }}' \
             -var='api_image_name_tag=${{ needs.image-api.outputs.IMAGE_NAME_TAG }}' \
