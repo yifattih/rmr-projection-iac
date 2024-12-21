@@ -211,15 +211,15 @@ jobs:
           cd terraform
           terraform init
           terraform apply -auto-approve \
-            -var='project_id=${{ secrets.GCP_PROJECT_ID }}' \
-            -var='region=${{ secrets.GCP_REGION }}' \
-            -var='bucket=${{ secrets.BUCKET_NAME }}' \
-            -var='bucket_prefix=${{ secrets.BUCKET_PREFIX }}' \
-            -var='api_service_name=${{ needs.image-api.outputs.SERVICE_NAME }}' \
-            -var='api_environment=${{ needs.image-api.outputs.ENVIRONMENT }}' \
-            -var='api_image_name_tag=${{ needs.image-api.outputs.IMAGE_NAME_TAG }}' \
-            -var='api_container_port=${{ vars.CONTAINER_PORT_API }}' \
-            -var='client_service_name=${{ needs.image-client.outputs.SERVICE_NAME }}' \
-            -var='client_environment=${{ needs.image-client.outputs.ENVIRONMENT }}' \
-            -var='client_image_name_tag=${{ needs.image-client.outputs.IMAGE_NAME_TAG }}' \
-            -var='client_container_port=${{ vars.CONTAINER_PORT_CLIENT }}'
+            -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            -var="region=${{ secrets.GCP_REGION }}" \
+            -var="bucket=${{ secrets.BUCKET_NAME }}" \
+            -var="bucket_prefix=${{ secrets.BUCKET_PREFIX }}" \
+            -var="api_service_name=${{ needs.image-api.outputs.SERVICE_NAME }}" \
+            -var="api_environment=${{ needs.image-api.outputs.ENVIRONMENT }}" \
+            -var="api_image_name_tag=${{ needs.image-api.outputs.IMAGE_NAME_TAG }}" \
+            -var="api_container_port=${{ vars.CONTAINER_PORT_API }}" \
+            -var="client_service_name=${{ needs.image-client.outputs.SERVICE_NAME }}" \
+            -var="client_environment=${{ needs.image-client.outputs.ENVIRONMENT }}" \
+            -var="client_image_name_tag=${{ needs.image-client.outputs.IMAGE_NAME_TAG }}" \
+            -var="client_container_port=${{ vars.CONTAINER_PORT_CLIENT }}"
