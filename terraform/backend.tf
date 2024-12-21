@@ -1,6 +1,6 @@
-terraform {
-  backend "gcs" {
-    bucket      = "env.bucket_name"
-    prefix      = "env.bucket_prefix"
-  }
-}
+# terraform {
+#   backend "gcs" {
+#     bucket      = env.bucket_name
+#     prefix      = "env.bucket_prefix"
+#   }
+# }

@@ -207,12 +207,11 @@ jobs:
         uses: hashicorp/setup-terraform@v3.1.2
       #######################################################################
       - name: Terraform Init and Apply
-        env:
-          bucket_name: ${{ secrets.BUCKET_NAME }}
-          bucket_prefix: ${{ secrets.BUCKET_PREFIX }}
         run: |
           cd terraform
-          terraform init
+          terraform init \
+            -backend-config="bucket=${{ secrets.BUCKET_NAME }}" \
+            -backend-config="prefix=${{ secrets.BUCKET_PREFIX }}"
           terraform apply -auto-approve \
             -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
             -var="region=${{ secrets.GCP_REGION }}" \
