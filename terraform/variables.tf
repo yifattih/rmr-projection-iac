@@ -38,7 +38,7 @@ variable "client_container_port" {
   type = number
 }
 
-variable "bucket" {
+variable "bucket_name" {
   type = string
 }
 
