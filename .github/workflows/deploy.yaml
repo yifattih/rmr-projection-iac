@@ -194,6 +194,12 @@ jobs:
           echo 'client_environment          : ${{ needs.image-client.outputs.ENVIRONMENT }}' \
           echo 'client_name_tag'            : ${{ needs.image-client.outputs.IMAGE_NAME_TAG }} \
           echo 'client_container_port       : ${{ vars.CONTAINER_PORT_CLIENT }}'
+    steps:
+      - name: Construct data maps for Terraform
+        id: tfdata
+        run: |
+          gcp_data='{"project_id"=${{ secrets.GCP_PROJECT_ID }}, \
+                    "region"=${{ secrets.GCP_REGION }}}'
       #######################################################################
       - name: Checkout code
         uses: actions/checkout@v4
@@ -211,8 +217,9 @@ jobs:
           cd terraform
           terraform init
           terraform apply -auto-approve \
-            -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
-            -var="region=${{ secrets.GCP_REGION }}" \
+            -var="gcp_data=${{ steps.tfdata.outputs.gcp_data }}" \
+            # -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            # -var="region=${{ secrets.GCP_REGION }}" \
             -var="service_account_name=${{ secrets.SERVICE_ACCOUNT_NAME }}" \
             -var="api_service_name=${{ needs.image-api.outputs.SERVICE_NAME }}" \
             -var="api_environment=${{ needs.image-api.outputs.ENVIRONMENT }}" \
