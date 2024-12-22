@@ -45,11 +45,3 @@ variable "client_container_port" {
 variable "service_account_name" {
   type = string 
 }
-
-# variable "bucket_name" {
-#   type = string
-# }
-
-# variable "bucket_prefix" {
-#   type = string
-# }

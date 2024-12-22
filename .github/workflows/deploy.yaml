@@ -219,8 +219,6 @@ jobs:
           terraform force-unlock -force 1734909220686470
           terraform apply -auto-approve \
             -var="gcp_data=${{ steps.tfdata.outputs.gcp_data }}" \
-            # -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
-            # -var="region=${{ secrets.GCP_REGION }}" \
             -var="service_account_name=${{ secrets.SERVICE_ACCOUNT_NAME }}" \
             -var="api_service_name=${{ needs.image-api.outputs.SERVICE_NAME }}" \
             -var="api_environment=${{ needs.image-api.outputs.ENVIRONMENT }}" \
