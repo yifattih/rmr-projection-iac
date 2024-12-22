@@ -216,6 +216,7 @@ jobs:
         run: |
           cd terraform
           terraform init
+          terraform force-unlock -force 1734909220686470
           terraform apply -auto-approve \
             -var="gcp_data=${{ steps.tfdata.outputs.gcp_data }}" \
             # -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
