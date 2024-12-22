@@ -194,7 +194,7 @@ jobs:
           echo 'client_environment          : ${{ needs.image-client.outputs.ENVIRONMENT }}' \
           echo 'client_name_tag'            : ${{ needs.image-client.outputs.IMAGE_NAME_TAG }} \
           echo 'client_container_port       : ${{ vars.CONTAINER_PORT_CLIENT }}'
-    steps:
+      #######################################################################
       - name: Construct data maps for Terraform
         id: tfdata
         run: |
