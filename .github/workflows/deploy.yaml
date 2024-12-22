@@ -200,6 +200,8 @@ jobs:
         run: |
           gcp_data='{"project_id"=${{ secrets.GCP_PROJECT_ID }}, \
                     "region"=${{ secrets.GCP_REGION }}}'
+
+          echo "gcp_data=$gcp_data" >> "$GITHUB_OUTPUT"
       #######################################################################
       - name: Checkout code
         uses: actions/checkout@v4
