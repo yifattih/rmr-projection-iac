@@ -188,18 +188,18 @@ jobs:
           echo 'region                      : ${{ secrets.GCP_REGION }}' \
           echo 'api_service_name            : ${{ needs.image-api.outputs.SERVICE_NAME }}' \
           echo 'api_environment             : ${{ needs.image-api.outputs.ENVIRONMENT }}' \
-          echo 'api_name_tag'               : ${{ needs.image-api.outputs.IMAGE_NAME_TAG }} \
+          echo 'api_name_tag                : ${{ needs.image-api.outputs.IMAGE_NAME_TAG }} \
           echo 'api_container_port          : ${{ vars.CONTAINER_PORT_API }}' \
           echo 'client_service_name         : ${{ needs.image-client.outputs.SERVICE_NAME }}' \
           echo 'client_environment          : ${{ needs.image-client.outputs.ENVIRONMENT }}' \
-          echo 'client_name_tag'            : ${{ needs.image-client.outputs.IMAGE_NAME_TAG }} \
+          echo 'client_name_tag             : ${{ needs.image-client.outputs.IMAGE_NAME_TAG }} \
           echo 'client_container_port       : ${{ vars.CONTAINER_PORT_CLIENT }}'
       #######################################################################
       - name: Construct data maps for Terraform
         id: tfdata
         run: |
-          gcp_data='{"project_id"=${{ secrets.GCP_PROJECT_ID }}, \
-                    "region"=${{ secrets.GCP_REGION }}}'
+          gcp_data="{\"project_id\"=${{ secrets.GCP_PROJECT_ID }}, \
+                    \"region\"=${{ secrets.GCP_REGION }}}"
 
           echo "gcp_data=$gcp_data" >> "$GITHUB_OUTPUT"
       #######################################################################
