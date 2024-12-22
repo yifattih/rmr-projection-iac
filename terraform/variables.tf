@@ -1,10 +1,14 @@
-variable "project_id" {
-  type = string  
+variable "gcp_data" {
+  type = map(string)  
 }
 
-variable "region" {
-  type = string
-}
+# variable "project_id" {
+#   type = string  
+# }
+
+# variable "region" {
+#   type = string
+# }
 
 variable "api_service_name" {
   type = string
