@@ -1,14 +1,10 @@
-variable "gcp_data" {
-  type = map(string)  
+variable "project_id" {
+  type = string  
 }
 
-# variable "project_id" {
-#   type = string  
-# }
-
-# variable "region" {
-#   type = string
-# }
+variable "region" {
+  type = string
+}
 
 variable "api_service_name" {
   type = string
@@ -45,11 +41,3 @@ variable "client_container_port" {
 variable "service_account_name" {
   type = string 
 }
-
-# variable "bucket_name" {
-#   type = string
-# }
-
-# variable "bucket_prefix" {
-#   type = string
-# }

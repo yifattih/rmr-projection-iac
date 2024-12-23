@@ -8,10 +8,6 @@ terraform {
 }
 
 provider "google" {
-  project = var.gcp_data["project_id"]
-  region  = var.gcp_data["region"]
+  project = var.project_id
+  region  = var.region
 }
-# provider "google" {
-#   project = var.project_id
-#   region  = var.region
-# }
