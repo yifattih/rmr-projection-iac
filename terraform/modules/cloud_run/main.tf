@@ -1,16 +1,14 @@
+ # Service template definition
 resource "google_cloud_run_service" "service" {
   project  = var.project_id
   location = var.region
   name     = var.name
 
-  # Service template definition
   template {
     metadata {
-      # name = var.name
       annotations = {
         "autoscaling.knative.dev/minScale" = "0" # Minimum instances
         "autoscaling.knative.dev/maxScale" = "10" # Maximum instances
-        # "run.googleapis.com/revision-suffix" = var.revision_suffix
       }
       labels     = {
         # Labels for identifying your service
@@ -22,7 +20,6 @@ resource "google_cloud_run_service" "service" {
     spec {
       # Define container
       containers {
-        # name  = var.name
         image =  "${var.region}-docker.pkg.dev/${var.project_id}/${var.environment}/${var.image_name_tag}"
         ports {
           name           = "http1"
@@ -31,6 +28,12 @@ resource "google_cloud_run_service" "service" {
         env {
           name  = length(var.env_vars) != 0 ? "API_URL" : "none"
           value = lookup(var.env_vars, "API_URL", null)
+        }
+        resources {
+          limits = {
+            memory = "256Mi"
+            cpu = "1"
+          }
         }
       }
       service_account_name = var.service_account_name

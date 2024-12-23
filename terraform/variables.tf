@@ -1,5 +1,5 @@
 variable "project_id" {
-  type = string  
+  type = string
 }
 
 variable "region" {
@@ -39,5 +39,5 @@ variable "client_container_port" {
 }
 
 variable "service_account_name" {
-  type = string 
+  type = string
 }
