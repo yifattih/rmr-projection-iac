@@ -8,7 +8,7 @@ resource "google_cloud_run_service" "service" {
     metadata {
       # name = var.name
       annotations = {
-        "autoscaling.knative.dev/minScale" = "1" # Minimum instances
+        "autoscaling.knative.dev/minScale" = "0" # Minimum instances
         "autoscaling.knative.dev/maxScale" = "10" # Maximum instances
         # "run.googleapis.com/revision-suffix" = var.revision_suffix
       }
