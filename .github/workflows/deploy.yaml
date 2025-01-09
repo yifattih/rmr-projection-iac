@@ -79,7 +79,7 @@ jobs:
       - name: Build Docker Image
         run: |
           cd ${{ vars.REPO_NAME_API }}
-          docker build -t ${{ steps.metadata.outputs.IMAGE_URI }} ./api_service
+          docker build -t ${{ steps.metadata.outputs.IMAGE_URI }} ./api
         #######################################################################
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2.1.7
